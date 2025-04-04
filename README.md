@@ -33,7 +33,10 @@ sudo apt install python3-venv
 仮想環境を作成するフォルダ名はvenvとする  
 python3 -m venv venv  
 VSCodeでwslに接続する  
-git clone git@github.com:nayutarou/Hackathon2025Spring.git  
+任意のフォルダでリポジトリと連携する
+git remote add origin git@github.com:nayutarou/Hackathon2025Spring.git
+プルする
+git pull origin main
 作成した仮想環境を有効化する  
 source venv/bin/activate  
 Djangoのインストール  
