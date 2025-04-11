@@ -3,13 +3,15 @@ import json
 import datetime
 
 from models import Attendance,MYTimetable,Semester # DBのインポート
-from subjects.models import SubjectClass,Subject
+from subjects.models import SubjectClass,Subject,Notice
 from django.shortcuts import render,redirect,get_object_or_404 # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
 from django.contrib.auth.decorators import login_required # ログインしてないユーザを制限する
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse,Http404
 from django.db import IntegrityError
 from django.core.exceptions import SuspiciousOperation
+from django.contrib import messages  # フラッシュメッセージ用
+
 
 # 出欠確認 Attendanceモデルに登録
 @csrf_exempt
@@ -101,33 +103,80 @@ def attendance(request):
 # MY時間割 時間割モデルに登録
 @login_required
 # requestの他にURLからsmester_nameを受け取る
-def mytimetable(request,semester_name):
+def mytimetable_regist(request,semester_name):
     if request.method == 'POST':
         # チェックボックスからsubject_idからリストの取得とsemesterの取得
         subject_ids = request.POST.getlist('subject_ids')
-        semester = get_object_or_404(Semester, name=semester_name)  # URLから学期を取得
-        # 一括取得
-        subject_objects = SubjectClass.objects.filter(subject__in=subject_ids)  
-        user = request.user  # ログインユーザ
-        
-        # リストに格納する
+
+        # 科目が何も選ばれていなかったときの警告処理
+        if not subject_ids:
+            messages.warning(request, "科目が選択されていません。")
+            return redirect('mytimetable_regist', semester_name=semester_name)
+
+        # URLから学期を取得（見つからなければ404）
+        semester = get_object_or_404(Semester, name=semester_name)
+
+        # 一括取得（subject外部キーを元に関連SubjectClassを取得）
+        subject_objects = SubjectClass.objects.filter(subject__in=subject_ids)
+
+        # ログインしているユーザを取得
+        user = request.user  
+
+        # リストに格納する（各SubjectClassとSemesterでMYTimetableインスタンス作成）
         timetable_list = [
             MYTimetable(user=user, subjectclass=subject_class, semester=semester)
             # 一つずつ取り出す
             for subject_class in subject_objects
         ]
-        # DBに登録
-        MYTimetable.objects.bulk_create(timetable_list)
 
+        try:
+            # DBに一括登録（例外処理で重複などに備える）
+            MYTimetable.objects.bulk_create(timetable_list)
+            messages.success(request, "時間割が正常に登録されました。")
+        except IntegrityError:
+            messages.error(request, "登録中にエラーが発生しました。既に登録されている可能性があります。")
 
-        return redirect('')  # 完了後のリダイレクト先
+        return redirect('mytimetable')  # 完了後のリダイレクト先（URL nameは適宜修正）
+
+    # GETメソッド時の処理：全てのSubjectClassを取得して表示（必要に応じて絞り込み）
+    subject_classes = SubjectClass.objects.all()
+    return render(request, 'mytimetable.html', {
+        'subject_classes': subject_classes,
+        'semester_name': semester_name,
+    })
     
-    subject_classes = SubjectClass.objects.all()  # 適宜絞り込み
-    return render(request, 'mytimetable.html', {'subject_classes': subject_classes, 'semester_name': semester_name})
-
-
 """
     user = models.ForeignKey(User, on_delete=models.CASCADE) # 外部キーのuser_id
     subjectclass = models.ForeignKey(SubjectClass, on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
+"""
+
+
+# 自分の時間割表示
+@login_required
+def topframe(request, semester_name):
+    # ログインしているユーザー
+    user = request.user
+
+    # 学期名に対応する Semester オブジェクトを取得
+    semester = get_object_or_404(Semester, name=semester_name)
+
+    # 自分の時間割を取得
+    mytimetable_list = MYTimetable.objects.filter(user=user, semester=semester)
+
+    # 通知を表示
+    notice_list = Notice.objects.filter(user=user).order_by('-created_at')
+
+    # テンプレートに渡して描画
+    return render(request, 'timetable/mytimetable.html', {
+        'mytimetable_list': mytimetable_list,
+        'semester': semester,
+        'notice':notice_list
+    })
+    
+"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    contents = models.CharField(max_length=50)  # 通知内容
+    created_at = models.DateField(auto_now_add=True)  # 作成日
 """
