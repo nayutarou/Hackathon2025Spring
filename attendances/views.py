@@ -2,8 +2,8 @@ import os
 import json
 import datetime
 
-from models import Attendance,MYTimetable # DBのインポート
-# from subjects.models import SubjectClass
+from models import Attendance,MYTimetable,Semester # DBのインポート
+from subjects.models import SubjectClass,Subject
 from django.shortcuts import render,redirect,get_object_or_404 # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
 from django.contrib.auth.decorators import login_required # ログインしてないユーザを制限する
 from django.views.decorators.csrf import csrf_exempt
@@ -20,22 +20,25 @@ def attendance(request):
         if request.method != 'POST':
             return JsonResponse({"error": "POST method required"}, status=405)
         
-        # HTTPリクエストの中身(body)を取得
-        # body = json.loads(request.body)
 
-        # HTMLから受け取るとこ
-        # subjectidの取得 <- 押されたsubjectのidを取得する(時間割のモデルと関数、htmlを書かないと無理?)
-        subject = request.POST.get('subject_id')
+        # HTMLから受け取るもの
+        # mytableidの取得
+        mytimetable_id = request.POST.get('mytimetable_id')
         # 出欠のflag <- 出欠のフラグ(押されたボタン)
         flag = request.POST.get('flag')
         # 今のコマ
         lesson = request.POST.get('lesson')
 
         # 必須項目のバリデーション
-        # subject_idまたはlessonが取得できないときにエラーページを出す
-        if not subject or not lesson:
+        # mytimetable_idまたはlessonが取得できないときにエラーページを出す
+        if not mytimetable_id or not lesson:
             return JsonResponse({"error": "Subject and Lesson are required"}, status=400)
 
+        # mytimetable_idからMYTimetableに該当する1つのデータを取得
+        mytimetable = get_object_or_404(MYTimetable,id=mytimetable_id)
+        # mytimetableに格納されているsubjectclass(id)に格納されているsubject(id)を取得
+        subject_id = mytimetable.subjectclass.subject
+        
         # 今ログインしてるユーザを取得
         user = request.user
 
@@ -49,11 +52,12 @@ def attendance(request):
         # 時間割id = 今日の曜日から時間割に登録されている今日の押された教科から曜日とコマ数を取得
         # その教科の曜日に合うのを探す、コマもMYTimetableから
         # get_object_or_404(DB名,カラム名 = 調べたいもの ) データベースからオブジェクトを取得する際に使用
-        timetable = get_object_or_404(MYTimetable,week = week,lesson = lesson)
+        timetables = get_object_or_404(MYTimetable,week = week,lesson = lesson)
+        timetable = timetables.id
 
         Attendance.objects.create(
                 user=user,
-                sbject=subject,
+                sbject=subject_id,
                 flag=flag,
                 created_at=date,
                 timetable=timetable
@@ -94,3 +98,36 @@ def attendance(request):
     timetable = models.ForeignKey("MYTimetable", on_delete=models.CASCADE) # 外部キーの時間割id
 """
 
+# MY時間割 時間割モデルに登録
+@login_required
+# requestの他にURLからsmester_nameを受け取る
+def mytimetable(request,semester_name):
+    if request.method == 'POST':
+        # チェックボックスからsubject_idからリストの取得とsemesterの取得
+        subject_ids = request.POST.getlist('subject_ids')
+        semester = get_object_or_404(Semester, name=semester_name)  # URLから学期を取得
+        # 一括取得
+        subject_objects = SubjectClass.objects.filter(subject__in=subject_ids)  
+        user = request.user  # ログインユーザ
+        
+        # リストに格納する
+        timetable_list = [
+            MYTimetable(user=user, subjectclass=subject_class, semester=semester)
+            # 一つずつ取り出す
+            for subject_class in subject_objects
+        ]
+        # DBに登録
+        MYTimetable.objects.bulk_create(timetable_list)
+
+
+        return redirect('')  # 完了後のリダイレクト先
+    
+    subject_classes = SubjectClass.objects.all()  # 適宜絞り込み
+    return render(request, 'mytimetable.html', {'subject_classes': subject_classes, 'semester_name': semester_name})
+
+
+"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE) # 外部キーのuser_id
+    subjectclass = models.ForeignKey(SubjectClass, on_delete=models.CASCADE)
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
+"""
