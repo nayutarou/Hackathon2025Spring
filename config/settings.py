@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'attendances.apps.AttendancesConfig',
     'subjects.apps.SubjectsConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +124,6 @@ STATICFILES_DIRS = [BASE_DIR / 'static'] # 静的ファイルのディレクト�
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+# ログイン後のリダイレクト先
+LOGIN_REDIRECT_URL = '/attendances/'
