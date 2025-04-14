@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.contrib.auth.forms import UserCreationForm   # ユーザー登録用のフォームクラスをインポート
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login
@@ -10,8 +7,8 @@ from .forms import CustomUserCreationForm
 from django.contrib.auth.models import User
 
 # root
-def root_login_view(request):
-    return render(request, 'registration/login.html')
+# def root_login_view(request):
+#     return render(request, 'registration/login.html')
 
 # SignUpViewクラスを作成
 class SignUpView(generic.CreateView):
@@ -35,12 +32,13 @@ def login_view(request):
 
             if user is not None:
                 login(request, user)
-                return redirect('/')
+                # 成功時の遷移先
+                return redirect('subjects/syllabus.html')
             else:
                 error = 'メールアドレスまたはパスワードが間違っています。'
         except User.DoesNotExist:
             error = 'メールアドレスまたはパスワードが間違っています。'
         
-        return render(request, 'login.html', {'error': error})
+        return render(request, 'login/login.html', {'error': error})
     
-    return render(request, 'login.html')
+    return render(request, 'registration/login.html')

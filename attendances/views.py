@@ -34,7 +34,7 @@ def attendance(request):
         # 必須項目のバリデーション
         # mytimetable_idまたはlessonが取得できないときにエラーページを出す
         if not mytimetable_id or not lesson:
-            return JsonResponse({"error": "Subject and Lesson are required"}, status=400)
+            return JsonResponse({"error": "mytimetable_idとlessonが取得できませんでした"}, status=400)
 
         # mytimetable_idからMYTimetableに該当する1つのデータを取得
         mytimetable = get_object_or_404(MYTimetable,id=mytimetable_id)

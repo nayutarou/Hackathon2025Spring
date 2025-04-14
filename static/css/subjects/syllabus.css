@@ -1,0 +1,27 @@
+
+.flex{
+    display: flex;
+}
+
+main{
+    margin-top: 40px;
+    justify-content: center;
+}
+
+.l-box{
+    border-right: 1px solid #E0DCDC;
+}
+
+.l-box,.r-box{
+    width: 30vw;
+}
+
+.l-box p,.r-box p{
+    width: 100%;
+    text-align: center;
+    padding: 1vw 0 ;
+}
+
+.l-box p:first-child,.r-box p:first-child{
+    border-bottom: 1.5px solid #ACACAC;
+}
