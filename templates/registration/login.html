@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="ログインページ" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/login/login.css' %}" />
+    <title>login</title>
+  </head>
+
+  <body>
+    <h1 class="center">Unitrex</h1>
+    <form method="post">
+      {% csrf_token %}
+      {% if error %}
+        <p style="color: red;">{{ error }}</p>
+      {% endif %}
+
+      <div class="border-bottom">
+        <label for="email">メールアドレス</label>
+        <input type="email" name="email" id="email" class="form-control" required />
+      </div>
+
+      <div class="border-bottom">
+        <label for="password">パスワード</label>
+        <input type="password" name="password" id="password" class="form-control" required />
+      </div>
+
+      <div class="login-input">
+        <input type="submit" value="ログイン"></input>
+      </div>
+    </form>
+
+    <p class="bule">
+      <a href="{% url 'accounts:signup' %}">アカウントをお持ちでない方はこちら</a>
+    </p>
+    {% comment %} <p class="bule">
+      <a href="{% url 'accounts:password_reset' %}">パスワードを忘れた方はこちら</a>
+    </p> {% endcomment %}
+  </body>
+</html>

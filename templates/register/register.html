@@ -5,12 +5,12 @@
     <meta charset="UTF-8" />
     <meta name="description" content="登録ページ" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'css/register.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/register/register.css' %}" />
     <title>登録フォーム</title>
   </head>
   <body>
     <h1>Unitrex</h1>
-    <form method="post" action="{% url 'accoounts:signup' %}">
+    <form method="post" action="{% url 'accounts:signup' %}">
       {% csrf_token %}
       <div class="center">
         {{ form.non_field_errors }}
@@ -24,8 +24,8 @@
                     <p>{{ error }}</p>
                 {% endfor %}
             </div>
-        
         {% endfor %}
+      </div>
       <div class="register-input">
         <input type="submit" value="新規登録" />
       </div>
