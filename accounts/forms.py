@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 
 class CustomUserCreationForm(UserCreationForm):
     # emailフィールドを追加（バリデーションも含めて）
@@ -16,6 +18,12 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()  # 保存する
         return user
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise ValidationError("このメールアドレスは既に使用されています。")
+        return email
 
 # class EmailLoginForm(AuthenticationForm):
 #     username = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'autofocus': True}))

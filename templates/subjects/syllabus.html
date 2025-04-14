@@ -1,0 +1,58 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/subjects/syllabus.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}" />
+    <title>Document</title>
+  </head>
+  <body>
+    <main class="flex">
+      <div class="flex">
+        <div class="l-box">
+          <p>科目名</p>
+          <p>開講期</p>
+          <p>単位コマ</p>
+          <p>単位時間</p>
+          <p>曜日</p>
+          <p>学則科目名</p>
+          <p>推奨学年</p>
+          <p>検定費</p>
+          <p>教材費</p>
+        </div>
+        <div class="r-box">
+          <p>{{ subject.subject }}</p>
+          <p>{{ subjectclass.semester }}</p>
+          <p>{{ subjectclass.unit_koma }}</p>
+          <p>{{ subjectclass.unit_time }}</p>
+          <p>
+            {% for sc in subjectclasses %}
+              {{ sc.week|get_week_display }}{% if not forloop.last %}・{% endif %}
+            {% endfor %}
+          </p>
+          <p>{{ subjectclass.gakusoku_name }}</p>
+          <p>{{ subjectclass.recommended_grade }}年~</p>
+          <p>
+            {% if test_fee is none %}
+            0
+            {% else %}
+            {{ subjectclass.test_fee }}
+            {% endif %}
+            円
+          </p>
+          <p>
+            {% if material_fee is none %}
+            0
+            {% else %}
+            {{ subjectclass.material_fee }}
+            {% endif %}
+            円
+          </p>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
