@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth.models import User
 
 class CustomUserCreationForm(UserCreationForm):
@@ -16,3 +16,6 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()  # 保存する
         return user
+
+# class EmailLoginForm(AuthenticationForm):
+#     username = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'autofocus': True}))
