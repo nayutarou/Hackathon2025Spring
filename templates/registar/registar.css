@@ -1,0 +1,54 @@
+@charset "utf-8";
+
+/* Register page styles */
+
+h1 {
+    font-size: 4em;
+    /* font-family: Robot; */
+    color: #333;
+    text-align: center;
+}
+
+h2 {
+    font-size: 2em;
+    color: #9D9D9D;
+}
+
+.border-bottom {
+    border-bottom: solid #D9D9D9;
+    justify-content: center;
+    padding: 1vh;
+    width: 90%;
+    height: 90%;
+    margin: 0 auto;
+}
+
+.register-input {
+    background-color: #68CBA7;
+    height: 7vh;
+    width: 80%;
+    border-radius: 10px;
+    margin: 5vh auto;
+    box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.3);
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+    padding: 1vh;
+    width: 100%;
+    font-size: 32px;
+    border: none;
+    outline: none;
+
+}
+
+input[type="submit"]{
+    color: #F4F5F7;
+    background-color: #68CBA7;
+    height: 100%;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    font-size: 2em;
+}
+
+
