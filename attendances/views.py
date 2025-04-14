@@ -2,7 +2,7 @@ import os
 import json
 import datetime
 
-from models import Attendance,MYTimetable,Semester # DBのインポート
+from .models import Attendance,MYTimetable,Semester # DBのインポート
 from subjects.models import SubjectClass,Subject,Notice
 from django.shortcuts import render,redirect,get_object_or_404 # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
 from django.contrib.auth.decorators import login_required # ログインしてないユーザを制限する
