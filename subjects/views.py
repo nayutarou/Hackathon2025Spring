@@ -11,9 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 # Create your views here.
 
-# syllabus
-# def syllabus(request):
-#     return render(request,'subjects/syllabus.html')
+
 
 @csrf_exempt
 @login_required # ログインしている時にできる
@@ -30,7 +28,7 @@ def syllabus(request):
             return JsonResponse({"error": "subject_idが取得できませんでした"}, status=400)
 
         subject = get_object_or_404(Subject, subject=subject_id)
-        subjectclass = SubjectClass.objects.filter(SubjectClass, subject=subject)
+        subjectclass = SubjectClass.objects.filter(subject=subject)
 
         return render(request, 'subjects/syllabus.html', {
             'subject': subject,
