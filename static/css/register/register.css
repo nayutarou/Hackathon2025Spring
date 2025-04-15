@@ -25,14 +25,16 @@ h2 {
 
 .register-input {
     background-color: #68CBA7;
-    height: 7vh;
+    height: 10vh;
     width: 80%;
     border-radius: 10px;
     margin: 5vh auto;
     box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.3);
 }
 
-input[type="text"], input[type="email"], input[type="password"] {
+input[type="text"],
+input[type="email"],
+input[type="password"] {
     padding: 1vh;
     width: 100%;
     font-size: 32px;
@@ -41,7 +43,7 @@ input[type="text"], input[type="email"], input[type="password"] {
 
 }
 
-input[type="submit"]{
+input[type="submit"] {
     color: #F4F5F7;
     background-color: #68CBA7;
     height: 100%;
@@ -52,11 +54,11 @@ input[type="submit"]{
     cursor: pointer;
 }
 
-p{
+p {
     text-align: center;
 }
 
-a{
+a {
     text-decoration: none;
     font-size: 12px;
     color: #3DB9E6;

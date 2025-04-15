@@ -1,0 +1,52 @@
+@charset "UTF-8";
+
+body {
+  background-color: #F4F5F7;
+}
+
+.title {
+  font-family: 'Great Vibes', cursive;
+}
+
+.body-text {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.logo {
+  font-family: 'Pacifico', cursive;
+}
+
+.heading {
+  font-family: 'Sansita', sans-serif;
+}
+
+.poetry {
+  font-family: 'Yuji Syuku', serif;
+}
+
+table {
+  width: 80%;
+  margin: 20px auto;
+  border-collapse: collapse;
+  border-top: solid 1px #E0DCDC;
+}
+
+main {
+  width: 100%;
+}
+
+th {
+  color: #68CBA7;
+}
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
+td {
+  padding: 0px 3rem;
+  text-align: center;
+  border-top: 1px solid #E0DCDC;
+  padding: 8px;
+}
