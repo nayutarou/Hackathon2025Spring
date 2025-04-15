@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>出席送信</title>
+    <link rel="stylesheet" href="attendance.css">
+</head>
+<header>
+    <h3>Unitrex</h3>
+    <p id="menu">menu</p>
+    <div>
+        <button id="menuButton" class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="menu" class="menu hidden">
+            <ul class="menu-ul">
+                <!-- <li><a href="index.html">株式会社むつみ商会</a></li> -->
+                <li><a id="line-link" href="#lineUp">ラインアップ</a></li>
+                <li><a href="fee.html">料金について</a></li>
+                <li><a href="info.html">企業情報</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<body>
+    <form>
+        <div class="switch">
+            <div class="toggle-button">
+                <p class="timetable">1コマ目</p>
+                <label class="toggle-label">
+                    <input type="checkbox" class="toggle-input" />
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        <input type="submit" id="send-btn" value="送信する">
+    </form>
+</body>
+
+</html>

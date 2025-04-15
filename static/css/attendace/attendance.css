@@ -1,0 +1,190 @@
+@charset "utf-8";
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background-color: #F4F5F7;
+}
+
+#menu {
+    color: #B3EBC6;
+}
+
+header {
+    display: flex;
+}
+
+.date {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.switch {
+    margin-top: 10%;
+}
+
+.toggle-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.timetable {
+    margin-right: 20%;
+    font-size: 14px;
+}
+
+
+.toggle-label {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 50px;
+    transition: 0.4s;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    left: 2px;
+    top: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+
+/* チェックされた時のスタイル */
+.toggle-input:checked+.slider {
+    background-color: #68CBA7;
+}
+
+.toggle-input:checked+.slider::before {
+    transform: translateX(22px);
+}
+
+
+
+#send-btn {
+    margin-top: 10%;
+    margin-left: 20%;
+    background-color: #68CBA7;
+    color: #ffffff;
+    padding: 15px;
+    width: 60%;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px 1px #c0c0c0;
+}
+
+
+
+/* ハンバーガーボタン */
+.hamburger {
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 4px;
+    background: black;
+    transition: 0.3s;
+}
+
+.bg-white {
+    background-color: white;
+}
+
+/* メニュー */
+.menu {
+    position: relative;
+    width: 90vw;
+    height: 100vh;
+    transform: translateX(100%);
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.menu-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.menu-ul li:first-of-type {
+    margin-top: 20vh;
+}
+
+.menu-ul li {
+    margin: 40px 0;
+}
+
+.menu a {
+    text-decoration: none;
+    color: black;
+    font-size: 18px;
+}
+
+/* メニューが開いた時 */
+.menu.active {
+    transform: translateX(0);
+}
+
+/* アイコンのアニメーション */
+.hamburger.active span:nth-child(1) {
+    transform: translateY(13px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-13px) rotate(-45deg);
+}
+
+.menu-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
