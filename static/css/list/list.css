@@ -1,0 +1,136 @@
+@charset "UTF-8";
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background-color: #F4F5F7;
+}
+
+header {
+    display: flex;
+    text-decoration: underline solid 2px black;
+}
+
+p {
+    font-size: 16px;
+}
+
+.search-box {
+    text-align: center;
+    margin-top: 5%;
+}
+
+.search-box input[type="text"] {
+    width: 70%;
+    padding: 2%;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+::placeholder {
+    font-size: 10px;
+}
+
+.item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5%;
+}
+
+#annual {
+    margin-left: 10%;
+    margin-right: 10%;
+    padding: 1%;
+    width: 22%;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 2px 2px 5px 1px #c0c0c0;
+}
+
+#rules {
+    padding: 1%;
+    width: 22%;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px 1px #c0c0c0;
+}
+
+#time-count {
+    padding: 1%;
+    width: 22%;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px 1px #c0c0c0;
+}
+
+select {
+    color: #23A852;
+    border-color: #23A852;
+}
+
+.subject {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10%;
+    text-align: center;
+}
+
+.subject-name {
+    font-size: 16px;
+    text-align: left;
+    margin-left: 5%;
+    vertical-align: top;
+
+}
+
+.element {
+    width: 70%;
+    border: 1px solid black;
+    border-radius: 23px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-shadow: 2px 2px 5px 1px #c0c0c0;
+    position: relative;
+    z-index: 2; 
+    background-color: white;
+
+}
+
+.explanation {
+    color: #696565;
+    font-size: 14px;
+    margin-right: 10%;
+}
+
+.subject-button {
+    padding: 2%;
+    width: 30%;
+    border: 1px none black;
+    border-radius: 15px;
+    background-color: #68CBA7;
+    color: #ffffff;
+    box-shadow: 2px 2px 5px 1px #c0c0c0;
+    font-size: 8px;
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+.shadow {
+    position: absolute;
+    width: 70%;
+    height: 100%;
+    background-color: #A8A8A8;
+    border-radius: 23px;
+    bottom: 5%;
+    left: 17%;
+    z-index: 1;
+    transform:skew(2deg,2deg);
+}
