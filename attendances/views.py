@@ -204,3 +204,51 @@ def create_attendances(request):
             return HttpResponse(f'エラーが発生しました: {str(e)}', status=400)
 
     return HttpResponse('無効なリクエストメソッドです。', status=405)
+# 欠席登録とslackのDM送信
+# Slackクライアントの初期化
+client = WebClient(token=settings.SLACK_BOT_TOKEN)
+
+@login_required
+def create_attendance(request):
+    if request.method == 'POST':
+        try:
+            timetable_id = request.POST.get('timetable_id')  # POSTパラメータから取得
+            subject_id = request.POST.get('subject_id')      # 科目POSTパラメータから取得
+            message = request.POST.get('message')            # メッセージをPOSTから取得
+            slack_id = request.POST.get('slack_id')          # Slack IDをPOSTから取得
+
+            if not message:
+                messages.error(request, "メッセージが未入力です。")
+                return redirect('attendance_list')  # メッセージ未入力の場合はリダイレクト
+
+            timetable = get_object_or_404(MYTimetable, pk=timetable_id)
+            subject = get_object_or_404(Subject, pk=subject_id)
+
+            # 出席情報を作成
+            attendance = Attendance.objects.create(
+                user=request.user,
+                subject=subject,
+                flag=True,  # 出席フラグをTrueに設定
+                timetable=timetable
+            )
+
+            # Slack IDがPOSTリクエストから送信されてきた場合にSlackにDMを送信
+            if slack_id:
+                try:
+                    # Slackにメッセージ送信
+                    client.chat_postMessage(channel=slack_id, text=message)
+                    result = "success"
+                except SlackApiError as e:
+                    logging.error(f"Slack error: {e.response['error']}")
+                    result = "fail"
+            else:
+                result = "fail"
+                messages.error(request, "Slack IDが未指定です。")
+
+            return redirect('attendance_list')  # 登録後に遷移
+
+        except Exception as e:
+            messages.error(request, f"エラーが発生しました: {str(e)}")
+            return redirect('attendance_list')  # エラー後は一覧ページにリダイレクト
+
+    return redirect('home')  # GET以外リダイレクト

@@ -12,6 +12,8 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# slackのトークンを.envファイルから取得
+SLACK_BOT_TOKEN = env('SLACK_BOT_TOKEN')
 
 DEBUG=True
 
