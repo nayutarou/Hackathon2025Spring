@@ -1,14 +1,17 @@
 from django.urls import path
 from . import views
 
-app_name = 'attenadces'
+app_name = 'attendances'
 
 urlpatterns = [
-    # path('',views.topframe,name='index'),
+    path('',views.topframe,name='index'),
     # ファイル名指定でも行くように
-    # path('',views.topframe,name='top-html'),
-    # 出席確認
-    # path('',views.attendance,name='attendacnce-html'),
+    path('index/',views.topframe,name='index'),
     # 時間割登録
-    # path('',views.mytimetable_regist,name='top-html'),
+    path('regist/', views.mytimetable_regist, name='mytimetable_regist'),
+    # 出席選択ページ（フォームを表示）
+    path('attendance/', views.attendance_page, name='attendance'),
+    # 出欠をDBに登録（POST用）
+    path('attendance_regist/', views.attendance, name='attendance_regist'),
+
 ]
