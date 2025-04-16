@@ -252,3 +252,35 @@ def create_attendance(request):
             return redirect('attendance_list')  # エラー後は一覧ページにリダイレクト
 
     return redirect('home')  # GET以外リダイレクト
+
+# 単位確認
+@login_required
+def credit_check(request):
+    user = request.user
+
+    # 教科ごとに出席・欠席を集計
+    summary_raw = (
+        Attendance.objects
+        .filter(user=user)
+        .values('subject__id', 'subject__subject_name')  # 教科ごと
+        .annotate(
+            attended_count=Count('id', filter=Q(flag=False)),  # 出席（flag=False）
+            absent_count=Count('id', filter=Q(flag=True))       # 欠席（flag=True）
+        )
+    )
+
+    summary = []
+    for row in summary_raw:
+        total = row['attended_count'] + row['absent_count']
+        attendance_ratio = math.floor((row['attended_count'] / total) * 100) if total > 0 else 0
+
+        summary.append({
+            'subject_id': row['subject__id'],
+            'subject_name': row['subject__subject_name'],
+            'attended_count': row['attended_count'],
+            'absent_count': row['absent_count'],
+            'total': total,
+            'attendance_ratio': attendance_ratio,
+        })
+
+    return render(request, 'attendance_summary.html', {'summary': summary})
