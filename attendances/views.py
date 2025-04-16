@@ -191,3 +191,117 @@ def topframe(request):
     contents = models.CharField(max_length=50)  # 通知内容
     created_at = models.DateField(auto_now_add=True)  # 作成日
 """
+# 出席登録
+@login_required
+def create_attendances(request):
+    if request.method == 'GET':
+        try:
+            timetable_id = request.GET.get('timetable_id')
+            subject_id = request.GET.get('subject_id')
+
+            timetable = get_object_or_404(MYTimetable, pk=timetable_id)
+            subject = get_object_or_404(Subject, pk=subject_id)
+
+            Attendance.objects.create(
+                user=request.user,
+                subject=subject,
+                flag=False,  # 出席として登録
+                timetable=timetable
+            )
+
+            return redirect('attendance_list')  # 成功時はリダイレクト
+
+        except Exception as e:
+            return HttpResponse(f'エラーが発生しました: {str(e)}', status=400)
+
+    return HttpResponse('無効なリクエストメソッドです。', status=405)
+# 欠席登録とslackのDM送信
+# Slackクライアントの初期化
+client = WebClient(token=settings.SLACK_BOT_TOKEN)
+
+@login_required
+def create_attendance(request):
+    if request.method == 'POST':
+        try:
+            timetable_id = request.POST.get('timetable_id')  # POSTパラメータから取得
+            subject_id = request.POST.get('subject_id')      # 科目POSTパラメータから取得
+            message = request.POST.get('message')            # メッセージをPOSTから取得
+            slack_id = request.POST.get('slack_id')          # Slack IDをPOSTから取得
+
+            if not message:
+                messages.error(request, "メッセージが未入力です。")
+                return redirect('attendance_list')  # メッセージ未入力の場合はリダイレクト
+
+            timetable = get_object_or_404(MYTimetable, pk=timetable_id)
+            subject = get_object_or_404(Subject, pk=subject_id)
+
+            # 出席情報を作成
+            attendance = Attendance.objects.create(
+                user=request.user,
+                subject=subject,
+                flag=True,  # 出席フラグをTrueに設定
+                timetable=timetable
+            )
+
+            # Slack IDがPOSTリクエストから送信されてきた場合にSlackにDMを送信
+            if slack_id:
+                try:
+                    # Slackにメッセージ送信
+                    client.chat_postMessage(channel=slack_id, text=message)
+                    result = "success"
+                except SlackApiError as e:
+                    logging.error(f"Slack error: {e.response['error']}")
+                    result = "fail"
+            else:
+                result = "fail"
+                messages.error(request, "Slack IDが未指定です。")
+
+            return redirect('attendance_list')  # 登録後に遷移
+
+        except Exception as e:
+            messages.error(request, f"エラーが発生しました: {str(e)}")
+            return redirect('attendance_list')  # エラー後は一覧ページにリダイレクト
+
+    return redirect('home')  # GET以外リダイレクト
+
+# 単位確認
+@login_required
+def credit_check(request):
+    user = request.user
+
+    # 教科ごとに出席・欠席を集計
+    summary_raw = (
+        Attendance.objects
+        .filter(user=user)
+        .values('subject__id', 'subject__subject_name')  # 教科ごと
+        .annotate(
+            attended_count=Count('id', filter=Q(flag=False)),  # 出席（flag=False）
+            absent_count=Count('id', filter=Q(flag=True))       # 欠席（flag=True）
+        )
+    )
+
+    summary = []
+    for row in summary_raw:
+        total = row['attended_count'] + row['absent_count']
+        attendance_ratio = math.floor((row['attended_count'] / total) * 100) if total > 0 else 0
+
+        summary.append({
+            'subject_id': row['subject__id'],
+            'subject_name': row['subject__subject_name'],
+            'attended_count': row['attended_count'],
+            'absent_count': row['absent_count'],
+            'total': total,
+            'attendance_ratio': attendance_ratio,
+        })
+
+    return render(request, 'attendance_summary.html', {'summary': summary})
+
+#欠席一覧
+ def non_attendance_list(request):
+    try:
+        attendances = Attendance.objects.filter(flag=True).select_related('subject').values('subject__subject_name', 'created_at')
+        return render(request, 'attendance_summary.html', {'attendances': attendances})
+
+    except Exception as e:
+        error_message = f"エラーが発生しました: {str(e)}"
+        return HttpResponse(error_message, status=500)
