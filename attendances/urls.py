@@ -15,4 +15,6 @@ urlpatterns = [
     # path('attendances/', views.create_attendances, name='create_attendances'),
     # 単位確認
     # path('',views.credit_check,name='credit_check'),
+    # 欠席一覧
+    # path('',views.non_attendance_list,name='non_attendance_list'),
 ]
