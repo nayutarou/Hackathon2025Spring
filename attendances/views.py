@@ -284,3 +284,13 @@ def credit_check(request):
         })
 
     return render(request, 'attendance_summary.html', {'summary': summary})
+
+#欠席一覧
+ def non_attendance_list(request):
+    try:
+        attendances = Attendance.objects.filter(flag=True).select_related('subject').values('subject__subject_name', 'created_at')
+        return render(request, 'attendance_summary.html', {'attendances': attendances})
+
+    except Exception as e:
+        error_message = f"エラーが発生しました: {str(e)}"
+        return HttpResponse(error_message, status=500)
