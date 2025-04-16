@@ -1,18 +1,27 @@
 import os
 import json
 import datetime
+import logging
+import math
 
+from django.conf import settings
 from .models import Attendance,MYTimetable,Semester # DBのインポート
 from subjects.models import SubjectClass,Subject,Notice
 from django.shortcuts import render,redirect,get_object_or_404 # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
 from django.contrib.auth.decorators import login_required # ログインしてないユーザを制限する
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse,Http404
+from django.http import JsonResponse,Http404,HttpResponse
 from django.db import IntegrityError
 from django.core.exceptions import SuspiciousOperation
 from django.contrib import messages  # フラッシュメッセージ用
 from django.views.decorators.csrf import csrf_protect  # CSRF守る
 from django.views.decorators.http import require_POST
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+from django.db.models import *
+
+
+
 
 
 # 登録画面の遷移
@@ -169,12 +178,7 @@ def topframe(request):
     
     # Semesterのリストをテンプレートに渡す
     semesters = Semester.objects.all()
-    
-    # 追加： lesson × week に対応する item を辞書化
-    # timetable_dict = {}
-    # for item in mytimetable_list:
-    #     key = (item.subjectclass.lesson, item.subjectclass.week)
-    #     timetable_dict[key] = item
+
 
     return render(request, 'attendances/index.html', {
         'mytimetable_list': mytimetable_list,
@@ -297,7 +301,7 @@ def credit_check(request):
     return render(request, 'attendance_summary.html', {'summary': summary})
 
 #欠席一覧
- def non_attendance_list(request):
+def non_attendance_list(request):
     try:
         attendances = Attendance.objects.filter(flag=True).select_related('subject').values('subject__subject_name', 'created_at')
         return render(request, 'attendance_summary.html', {'attendances': attendances})

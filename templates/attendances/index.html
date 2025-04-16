@@ -62,11 +62,11 @@
                                         <input type="hidden" name="subject_id" value="{{ item.subjectclass.id }}">
                                         <input type="hidden" name="lesson" value="{{ lesson }}">
                                         <input type="hidden" name="week" value="{{ day }}">
-                                        <input type="hidden" name="mytimetable_id" value="{{ mytimetable_id }}">
+                                        <input type="hidden" name="mytimetable_id" value="{{ item.id }}">
                                         
-                                        <button type="submit" class="square-button">
+                                        <button type="submit" class="square-button" data-subject-name="{{ item.subjectclass.subject.subject_name }}">
                                             {{ item.subjectclass.subject.subject_name }}
-                                        </button>
+                                        </button>                            
                                     </form>
                                 {% endif %}
                             {% endfor %}
@@ -114,5 +114,25 @@
             </div>
         </section> {% endcomment %}
     </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 科目名を格納するセット
+            const seenSubjects = new Set();
+            
+            // すべてのボタンを取得
+            const buttons = document.querySelectorAll('.square-button');
+    
+            // 各ボタンをループ
+            buttons.forEach(function(button, index) {
+                const subjectName = button.getAttribute('data-subject-name');
+                
+                // 偶数番目の科目を非表示にする（インデックスが0, 2, 4, ... の場合）
+                if (index % 2 === 0) {
+                    button.closest('form').style.display = 'none';  // 偶数番目のフォームを非表示にする
+                } 
+            });
+        });
+    </script>
+    
 </body>
 </html>
