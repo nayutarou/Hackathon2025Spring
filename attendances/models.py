@@ -13,9 +13,6 @@ class MYTimetable(models.Model):
     subjectclass = models.ForeignKey(SubjectClass, on_delete=models.CASCADE)
     semester = models.ForeignKey(Semester, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = ('user','subjectclass','semester')
-
     def __str__(self):
         return f"{self.subjectclass.subject.subject_name} - {self.semester}"
 
