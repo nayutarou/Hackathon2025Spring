@@ -11,4 +11,6 @@ urlpatterns = [
     # path('',views.attendance,name='attendacnce-html'),
     # 時間割登録
     # path('',views.mytimetable_regist,name='top-html'),
+    # 出席登録
+    # path('attendances/', views.create_attendances, name='create_attendances'),
 ]
