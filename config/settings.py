@@ -132,6 +132,6 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 LOGIN_REDIRECT_URL = '/attendances/'
 
 AUTHENTICATION_BACKENDS = [
-    'accounts.backends.EmailBackend',  # ← 追加
+    # 'accounts.backends.EmailBackend',  # ← 追加
     'django.contrib.auth.backends.ModelBackend',  # 念のため残しておくと安心
 ]
