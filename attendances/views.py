@@ -180,3 +180,27 @@ def topframe(request, semester_name):
     contents = models.CharField(max_length=50)  # 通知内容
     created_at = models.DateField(auto_now_add=True)  # 作成日
 """
+# 出席登録
+@login_required
+def create_attendances(request):
+    if request.method == 'GET':
+        try:
+            timetable_id = request.GET.get('timetable_id')
+            subject_id = request.GET.get('subject_id')
+
+            timetable = get_object_or_404(MYTimetable, pk=timetable_id)
+            subject = get_object_or_404(Subject, pk=subject_id)
+
+            Attendance.objects.create(
+                user=request.user,
+                subject=subject,
+                flag=False,  # 出席として登録
+                timetable=timetable
+            )
+
+            return redirect('attendance_list')  # 成功時はリダイレクト
+
+        except Exception as e:
+            return HttpResponse(f'エラーが発生しました: {str(e)}', status=400)
+
+    return HttpResponse('無効なリクエストメソッドです。', status=405)
