@@ -137,8 +137,6 @@ def mytimetable_regist(request):
         if is_registered:
             mytimetable_list = MYTimetable.objects.filter(user=user, semester=selected_semester)
 
-        print(f"***check***:{is_registered}")
-        print(f"aaaaaaaa~{mytimetable_list}")
 
         return render(request, 'attendances/mytimetable.html', {
             'subject_classes': subject_classes,
@@ -183,12 +181,17 @@ def topframe(request):
             'mytimetable_id': timetable.id,
         })
 
+    # --- 通知データの取得 ---
+    notices = Notice.objects.filter(user=user).select_related('subject').order_by('-created_at')
+    print(notices)
     context = {
-    'timetable_data_json': json.dumps(timetable_data, cls=DjangoJSONEncoder),
-    'semesters': list(my_semesters),
-    'weekdays': [1, 2, 3, 4, 5],  # 月〜金
-    'periods': range(1, 5),       # 1限〜4限（必要なら調整）
-}
+        'timetable_data_json': json.dumps(timetable_data, cls=DjangoJSONEncoder),
+        'semesters': list(my_semesters),
+        'weekdays': [1, 2, 3, 4, 5],  # 月〜金
+        'periods': range(1, 5),       # 1限〜4限（必要なら調整）
+        'notices': notices,           # 通知データを追加
+    }
+
     return render(request, 'attendances/index.html', context)
     
 """

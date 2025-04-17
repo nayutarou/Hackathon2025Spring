@@ -16,13 +16,13 @@
     <form>
       {% csrf_token %}
       <div class="semester-select-safe">
-      <label for="semester-select">学期選択:</label>
-      <select name="semester" id="semester-select">
-        {% for sem in semesters %}
-        <option value="{{ sem.id }}">{{ sem.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
+        <label for="semester-select">学期選択:</label>
+        <select name="semester" id="semester-select">
+          {% for sem in semesters %}
+          <option value="{{ sem.id }}">{{ sem.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </form>
   </div>
 
@@ -52,14 +52,12 @@
       {% endfor %}
     </tbody>
   </table>
-
   <div class="link_all">
-    {% comment %} <a href="{% url 'registration' %}" class="link_a">単位確認ページへ</a> {% endcomment %}
-    {% comment %} <a href="{% url 'registration' %}">
-      <img src="{% static 'img/Group 453.png' %}" class="img_a" alt="単位確認">
-    </a> {% endcomment %}
+    <div>
+      <a href="{% url 'attendances:credit_check' %}" class="link_a">単位確認ページへ</a>
+      <a href="{% url 'attendances:mytimetable_regist' %}">履修登録ページへ</a>
+    </div>
   </div>
-  {% comment %}
   <section class="notice">
     <div class="text-with-lines">
       <div class="text-contents">
@@ -69,25 +67,20 @@
     </div>
     <div class="notice-stand">
       <ul class="news-list">
-        {% for notice in notice %}
+        {% for notice in notices %}
         <li class="item">
           <a href="#">
             <div class="tabulabel {% if notice.is_urgent %}first{% else %}second{% endif %}">
               {% if notice.is_urgent %}緊急{% else %}通常{% endif %}
             </div>
-            <p class="title">{{ notice.title }}</p>
+            <p class="title">{{ notice.contents }}</p>
           </a>
         </li>
         {% endfor %}
       </ul>
     </div>
-    <div class="notice-footer">
-      <a href="{% url 'all_notices' %}" class="view-all">VIEW ALL</a>
-      <a href="{% url 'registration' %}">
-        <img src="{% static 'img/Arrow 2.png' %}" class="arrows" alt="矢印">
-      </a>
-    </div>
-  </section> {% endcomment %}
+
+  </section>
 </main>
 <script>
 
