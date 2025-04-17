@@ -11,6 +11,9 @@ urlpatterns = [
     path('regist/', views.mytimetable_regist, name='mytimetable_regist'),
     # 出席選択ページ（フォームを表示）
     path('attendance/', views.attendance_page, name='attendance'),
+    # 欠席選択ページ（フォームを表示）
+    path('non_attendance/', views.non_attendance_page, name='non_attendance'),
+
     # 出欠をDBに登録（POST用）
     path('attendance_regist/', views.attendance, name='attendance_regist'),
     # 単位確認
@@ -18,6 +21,9 @@ urlpatterns = [
 
     # 欠席一覧
     path('attendance_list/',views.non_attendance_list,name='non_attendance_list'),
+
+    # 欠席登録
+    path('non_attendance_regist/', views.create_attendance, name='non_attendance_regist'),
 
     # path('',views.mytimetable_regist,name='top-html'),
     # 出席登録

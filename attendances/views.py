@@ -6,7 +6,7 @@ import math
 
 from django.conf import settings
 from .models import Attendance,MYTimetable,Semester # DBのインポート
-from subjects.models import SubjectClass,Subject,Notice
+from subjects.models import SubjectClass,Subject,Notice,Slack
 from django.shortcuts import render,redirect,get_object_or_404,reverse # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
 from django.contrib.auth.decorators import login_required # ログインしてないユーザを制限する
 from django.views.decorators.csrf import csrf_exempt
@@ -34,7 +34,6 @@ def attendance_page(request):
         subject_name = request.POST.get('subject_name')
    
         # 処理を書く
-        print(subjectclass_id, mytimetable_id)
         
         context = {
             'subject_id': subjectclass_id,
@@ -43,6 +42,28 @@ def attendance_page(request):
             'subject_name': subject_name,
         }
         return render(request, 'attendances/attendance.html', context)
+
+def non_attendance_page(request):
+    if request.method == 'POST':
+        subjectclass_id = request.POST.get('subjectclass_id')
+        mytimetable_id = request.POST.get('mytimetable_id')
+        lesson = request.POST.get('lesson')
+        subject_name = request.POST.get('subject_name')
+
+        # Slack情報の取得（全件の場合）
+        slack_members = Slack.objects.all()
+
+
+
+
+        context = {
+            'subject_id': subjectclass_id,
+            'mytimetable_id': mytimetable_id,
+            'lesson': lesson,
+            'subject_name': subject_name,
+            'slack_members': slack_members,
+        }
+        return render(request, 'absence/absence.html', context)
 
 # 登録ボタンでDB登録
 @login_required
@@ -55,7 +76,7 @@ def attendance(request):
         # JSTでの現在の日付を取得
         date = datetime.now(jst).date()
 
-        print(date)
+
 
         subject_id = request.POST.get('subject')
         lesson = request.POST.get('lesson')
@@ -183,8 +204,8 @@ def topframe(request):
 
     # --- 通知データの取得 ---
     notices = Notice.objects.filter(user=user).select_related('subject').order_by('-created_at')
-    print(notices)
     context = {
+        'timetable_data': timetable_data,
         'timetable_data_json': json.dumps(timetable_data, cls=DjangoJSONEncoder),
         'semesters': list(my_semesters),
         'weekdays': [1, 2, 3, 4, 5],  # 月〜金
@@ -232,30 +253,28 @@ client = WebClient(token=settings.SLACK_BOT_TOKEN)
 def create_attendance(request):
     if request.method == 'POST':
         try:
-            timetable_id = request.POST.get('timetable_id')  # POSTパラメータから取得
-            subject_id = request.POST.get('subject_id')      # 科目POSTパラメータから取得
-            message = request.POST.get('message')            # メッセージをPOSTから取得
-            slack_id = request.POST.get('slack_id')          # Slack IDをPOSTから取得
-
-            if not message:
-                messages.error(request, "メッセージが未入力です。")
-                return redirect('attendance_list')  # メッセージ未入力の場合はリダイレクト
-
+            timetable_id = request.POST.get('timetable_id')
+            subject_id = request.POST.get('subject_id')
+            message = request.POST.get('message')
+            slack_id = request.POST.get('teacher')
+            absent_lessons = request.POST.getlist('absent_lessons[]')  # ←ここで配列受け取り！
             timetable = get_object_or_404(MYTimetable, pk=timetable_id)
             subject = get_object_or_404(Subject, pk=subject_id)
+            print(slack_id)
 
-            # 出席情報を作成
-            attendance = Attendance.objects.create(
-                user=request.user,
-                subject=subject,
-                flag=True,  # 出席フラグをTrueに設定
-                timetable=timetable
-            )
+            # 欠席した各コマに対して Attendance を作成
+            for lesson in absent_lessons:
+                Attendance.objects.create(
+                    user=request.user,
+                    subject=subject,
+                    flag=True,
+                    timetable=timetable,
 
-            # Slack IDがPOSTリクエストから送信されてきた場合にSlackにDMを送信
+                )
+
+            # Slack送信（あれば）
             if slack_id:
                 try:
-                    # Slackにメッセージ送信
                     client.chat_postMessage(channel=slack_id, text=message)
                     result = "success"
                 except SlackApiError as e:
@@ -265,13 +284,13 @@ def create_attendance(request):
                 result = "fail"
                 messages.error(request, "Slack IDが未指定です。")
 
-            return redirect('attendance_list')  # 登録後に遷移
+            return redirect('attendances:index')
 
         except Exception as e:
             messages.error(request, f"エラーが発生しました: {str(e)}")
-            return redirect('attendance_list')  # エラー後は一覧ページにリダイレクト
+            return redirect('attendances:index')
 
-    return redirect('home')  # GET以外リダイレクト
+    return redirect('attendances:index')
 
 # 単位確認
 @login_required
