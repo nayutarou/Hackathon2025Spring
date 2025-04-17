@@ -23,6 +23,7 @@ class Subject(models.Model):
     exam_fee = models.IntegerField()
     creadit_maxnum = models.IntegerField()  # その教科のコマ数
     creadit_threshold = models.IntegerField()  # 単位獲得数
+    creadit_minnum = models.IntegerField() #最小コマ数
 
     def __str__(self):
         return self.subject_name
