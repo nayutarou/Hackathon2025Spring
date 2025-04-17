@@ -22,6 +22,7 @@ from django.db.models import *
 from django.core.serializers.json import DjangoJSONEncoder
 from datetime import datetime
 import pytz
+from collections import defaultdict
 
 # 登録画面の遷移
 @login_required
@@ -299,13 +300,23 @@ def credit_check(request):
             'attendance_ratio': attendance_ratio,
         })
 
-    return render(request, 'attendance_summary.html', {'summary': summary})
+    return render(request, 'subjects/credit_confirm.html', {'summary': summary})
 
 #欠席一覧
 def non_attendance_list(request):
     try:
         attendances = Attendance.objects.filter(flag=True).select_related('subject').values('subject__subject_name', 'created_at')
-        return render(request, 'attendance_summary.html', {'attendances': attendances})
+
+        grouped_data = defaultdict(list)
+        for item in attendances:
+            subject = item['subject__subject_name']
+            date = localtime(item['created_at']).strftime('%Y/%m/%d')  # 日付だけ表示
+            grouped_data[subject].append(date)
+
+        # 辞書をリスト形式でテンプレートに渡す
+        grouped_attendances = [{'subject': subject, 'dates': dates} for subject, dates in grouped_data.items()]
+
+        return render(request, 'abcense/abcense.html', {'attendances': grouped_attendances})
 
     except Exception as e:
         error_message = f"エラーが発生しました: {str(e)}"

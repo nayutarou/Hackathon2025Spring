@@ -3,9 +3,9 @@
 
 {% block css %}
 <link rel="stylesheet" href="{% static 'css/attendances/style.css' %}">
-{% endblock  %}
+{% endblock %}
 
-{% block title %}時間割{% endblock  %}
+{% block title %}時間割{% endblock %}
 
 {% block content %}
 <main>
@@ -18,7 +18,7 @@
       <label for="semester-select">学期選択:</label>
       <select name="semester" id="semester-select">
         {% for sem in semesters %}
-        <option value="{{ sem.id }}" {% if sem.id == selected_semester_id %}selected{% endif %}>{{ sem.name }}</option>
+        <option value="{{ sem.id }}">{{ sem.name }}</option>
         {% endfor %}
       </select>
     </form>
@@ -88,7 +88,7 @@
   </section> {% endcomment %}
 </main>
 <script>
-  
+
 
   document.addEventListener("DOMContentLoaded", function () {
     const data = JSON.parse(document.getElementById("timetable-data").textContent);
@@ -183,4 +183,4 @@
   });
 </script>
 
-{% endblock  %}
+{% endblock %}

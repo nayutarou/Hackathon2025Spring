@@ -1,101 +1,66 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>単位確認</title>
-    <link rel="stylesheet" href="Credit_Confirmation.css">
-    <link rel="stylesheet" href="reset.css"> <!-- 必要ならリセットCSS -->
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>単位確認</title>
+  <link rel="stylesheet" href="{% static 'css/Credit_Confirmation/Credit_Confirmation.css' %}">
+  <link rel="stylesheet" href="{% static 'css/reset.css' %}">
 </head>
 
 <body>
-    <header>
-        <div class="header">
-            <a href="index.html" class="a_tag">✖</a>
-            <p class="title_tag">単位確認</p>
-            <input type="checkbox" id="overlay-input" />
-            <label class="menu-button" for="overlay-input" id="overlay-button">
-                <span class="menu-label">menu</span>
-                <span class="hamburger-icon"></span>
-            </label>
-        </div>
-    </header>
-    <div class="custom-selects">
-        <select class="custom-select">
-            <option value="" class="option_select">学期</option>
-            <option value="1">前期</option>
-            <option value="2">後期</option>
-        </select>
+  <header>
+    <div class="header">
+      <a href="{% url 'attendances:non_attendance_list' %}" class="a_tag">✖</a>
+      <p class="title_tag">単位確認</p>
+      <input type="checkbox" id="overlay-input" />
+      <label class="menu-button" for="overlay-input" id="overlay-button">
+        <span class="menu-label">menu</span>
+        <span class="hamburger-icon"></span>
+      </label>
     </div>
-    <div class="element">
-        <p class="explanation">出席率60%</p>
-        <div class="flex">
-            <h1 class="subject-name">PHP基礎</h1>
-            <div class="block">
-                <p class="explanation_Attendance">出席37/45</p>
-                <p class="explanation_Absence">欠席5/9</p>
-            </div>
-        </div>
-        <div class="button_sub">
-            <button type="button" class="subject-button">単位落とすまで4日</button>
-        </div>
-    </div>
-    <div class="element">
-        <p class="explanation">出席率60%</p>
-        <div class="flex">
-            <h1 class="subject-name">PHP基礎</h1>
-            <div class="block">
-                <p class="explanation_Attendance">出席37/45</p>
-                <p class="explanation_Absence">欠席5/9</p>
-            </div>
-        </div>
-        <div class="button_sub">
-            <button type="button" class="subject-button">単位落とすまで4日</button>
-        </div>
-    </div>
-    <div class="element">
-        <p class="explanation">出席率60%</p>
-        <div class="flex">
-            <h1 class="subject-name">PHP基礎</h1>
-            <div class="block">
-                <p class="explanation_Attendance">出席37/45</p>
-                <p class="explanation_Absence">欠席5/9</p>
-            </div>
-        </div>
-        <div class="button_sub">
-            <button type="button" class="subject-button">単位落とすまで4日</button>
-        </div>
-    </div>
-    <div class="element">
-        <p class="explanation">出席率60%</p>
-        <div class="flex">
-            <h1 class="subject-name">PHP基礎</h1>
-            <div class="block">
-                <p class="explanation_Attendance">出席37/45</p>
-                <p class="explanation_Absence">欠席5/9</p>
-            </div>
-        </div>
-        <div class="button_sub">
-            <button type="button" class="subject-button">単位落とすまで4日</button>
-        </div>
-    </div>
-    <div class="element">
-        <p class="explanation">出席率60%</p>
-        <div class="flex">
-            <h1 class="subject-name">PHP基礎</h1>
-            <div class="block">
-                <p class="explanation_Attendance">出席37/45</p>
-                <p class="explanation_Absence">欠席5/9</p>
-            </div>
-        </div>
-        <div class="button_sub">
-            <button type="button" class="subject-button">単位落とすまで4日</button>
-        </div>
-    </div>
+  </header>
 
+  <div class="custom-selects">
+    <select class="custom-select">
+      <option value="" class="option_select">学期</option>
+      <option value="1">前期</option>
+      <option value="2">後期</option>
+    </select>
+  </div>
 
+  {% for item in summary %}
+  <div class="element" data-url="{% url 'attendances:non_attendance_list' %}">
+    <p class="explanation">出席率{{ item.attendance_ratio }}%</p>
+    <div class="flex">
+      <h1 class="subject-name">{{ item.subject_name }}</h1>
+      <div class="block">
+        <p class="explanation_Attendance">出席{{ item.attended_count }}/{{ item.total }}</p>
+        <p class="explanation_Absence">欠席{{ item.absent_count }}/{{ item.total }}</p>
+      </div>
+    </div>
+    <div class="button_sub">
+      {% if item.attendance_ratio >= 60 %}
+      <button type="button" class="subject-button">単位取得見込み</button>
+      {% else %}
+      <button type="button" class="subject-button">単位落とす可能性あり</button>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <script>
+    document.querySelectorAll('.element').forEach(element => {
+      element.addEventListener('click', function () {
+        const url = this.getAttribute('data-url');
+        if (url) {
+          window.location.href = url;
+        }
+      });
+    });
+  </script>
 </body>
 
-</html
+</html>
