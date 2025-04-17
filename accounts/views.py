@@ -7,8 +7,13 @@ from .forms import CustomUserCreationForm
 from django.contrib.auth.models import User
 
 # root
-# def root_login_view(request):
-#     return render(request, 'registration/login.html')
+def root_view(request):
+    if request.user.is_authenticated:
+        # ログイン済みならダッシュボードなどへリダイレクト
+        return redirect('attendances/')  # '' はログイン後のURL名
+    else:
+        # 未ログインならログインページを表示
+        return login_view(request)  # Djangoのログインビュー or 自作ログインビュー
 
 # SignUpViewクラスを作成
 class SignUpView(generic.CreateView):

@@ -1,0 +1,232 @@
+/* ===================footer==================== */
+.header{
+    display: flex;
+    padding: 10px 0px 5px 0px;
+    border-bottom: solid 0.5px #4D4B4B;
+}
+.title_tag{
+    margin-left: 30px;
+    color: #4D4B4B;
+}
+
+/* ========================ハンバーガーボタン=================== */
+.menu-button {
+    margin-right: 10%;
+}
+
+#overlay-button span:before,
+#overlay-button span:after {
+    content: "";
+    position: absolute;
+    height: 1.3px;
+    width: 30px;
+    /* 幅を狭く */
+    border-radius: 1px;
+    transition: all .2s ease-in-out;
+    margin-top: 10%;
+}
+
+#overlay-input {
+    display: none;
+}
+
+input[type=checkbox]:checked~#overlay-button span {
+    background: transparent;
+}
+
+input[type=checkbox]:checked~#overlay-button span:before {
+    transform: rotate(45deg) translate(5px, 5px);
+    /* 回転を小さく */
+}
+
+input[type=checkbox]:checked~#overlay-button span:after {
+    transform: rotate(-45deg) translate(5px, -5px);
+    /* 回転を小さく */
+}
+
+#overlay {
+    height: 100vh;
+    width: 100vw;
+    background: #85C89C;
+    z-index: 2;
+    visibility: hidden;
+    position: fixed;
+}
+
+#overlay ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    height: 100vh;
+    padding-left: 0;
+    list-style-type: none;
+}
+
+#overlay ul li {
+    padding: 1em;
+}
+
+#overlay ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+
+/* ハンバーガー＋Menu文字を横並びに */
+#overlay-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    /* アイコンと文字の間隔 */
+    background: transparent;
+    margin-left: auto;
+}
+
+/* ハンバーガーアイコンの線（上下2本） */
+.hamburger-icon {
+    position: relative;
+    width: 30px;
+    height: 10px;
+    background: transparent;
+    margin: 10%;
+}
+
+/* 上下の線のスタイル */
+.hamburger-icon::before,
+.hamburger-icon::after {
+    content: "";
+    position: absolute;
+    height: 2px;
+    width: 30px;
+    border-radius: 1px;
+    transition: all .2s ease-in-out;
+}
+
+.hamburger-icon::before {
+    background-color: #23A852;
+    top: 0;
+}
+
+.hamburger-icon::after {
+    background-color: #85C89C;
+    top: 6px;
+}
+
+.menu-label {
+    font-size: 14px;
+    color: #23A852;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.link_a {
+    text-decoration: none;
+    color: #23A852;
+    font-size: 10px;
+}
+
+.link_all:hover a .link_all:hover img {
+    opacity: 0.7;
+    transform: scale(1.05);
+    transition: 0.3s;
+}
+
+.link_all {
+    text-align: end;
+    margin-right: 10px;
+    margin-bottom: 2%;
+}
+
+.img_a {
+    width: 8px;
+    height: 8px;
+    margin-top: -7px;
+}
+
+.flex_b {
+    display: flex;
+}
+
+
+.a_tag{
+    text-decoration: none;
+    color: #4D4B4B;
+    margin: 0px 0px 0px 25px;
+}
+
+.element {
+    background-color: #FFF7F7;        /* 背景色（白） */
+    border-radius: 8px;              /* 角を丸く */
+    padding: 5px 10px 10px 10px;                    /* 内側の余白 */
+    margin: 20px auto;                /* 外側の余白・中央揃え */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 影をつけて立体感 */
+    width: 60%;                /* 幅の制限（好みに応じて） */
+    border: 1px solid #FF3838;           /* 枠線 */
+}
+.flex{
+    display: flex;
+    justify-content: space-around;
+}
+.block{
+    display: block;
+    margin-top: 5%;
+}
+.explanation{
+    text-align: right;
+    font-size: 12px;
+    color: #979CA3;
+}
+
+.subject-name{
+    font-size: 20px;
+    color: #6B6F72;
+}
+.explanation_Attendance{
+    color: #979CA3;
+    font-size: 12px;
+}
+.explanation_Absence{
+    color: #979CA3;
+    margin-top: 10%;
+    font-size: 12px;
+
+}
+.subject-button{
+    background-color: #F45B5B;
+    border: none;
+    color: white;
+    font-weight: 400;
+    width: 100%;
+    padding: 6px;
+    border-radius: 10px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+}
+.button_sub{
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 4%;
+    
+}
+
+/* =====================selectボタン====================== */
+
+.custom-select {
+    padding: 4px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #85C89C;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    color: #85C89C;
+}
+
+.custom-selects{
+    width: 82%;
+    display: flex;
+    justify-content: right;
+    margin-top: 20px;
+}

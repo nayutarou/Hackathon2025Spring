@@ -23,17 +23,35 @@ class Subject(models.Model):
     exam_fee = models.IntegerField()
     creadit_maxnum = models.IntegerField()  # その教科のコマ数
     creadit_threshold = models.IntegerField()  # 単位獲得数
+    creadit_minnum = models.IntegerField() #最小コマ数
 
     def __str__(self):
         return self.subject_name
 
 class SubjectClass(models.Model):
+    MONDAY = 'Mon'
+    TUESDAY = 'Tue'
+    WEDNESDAY = 'Wed'
+    THURSDAY = 'Thu'
+    FRIDAY = 'Fri'
+
+    WEEKDAY_CHOICES = [
+        (MONDAY, 'Monday'),
+        (TUESDAY, 'Tuesday'),
+        (WEDNESDAY, 'Wednesday'),
+        (THURSDAY, 'Thursday'),
+        (FRIDAY, 'Friday'),
+    ]
+
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    week = models.IntegerField()  # 曜日
+    week = models.CharField(max_length=5, choices=WEEKDAY_CHOICES)
     lesson = models.IntegerField()  # コマ数
 
+    class Meta:
+        unique_together = ('subject', 'week', 'lesson')
+
     def __str__(self):
-        return f"{self.subject.subject_name} - {self.get_week_display()} - {self.get_lesson_display()}"
+        return f"{self.subject.subject_name} - {self.week} - {self.lesson}"
 
 class Notice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
