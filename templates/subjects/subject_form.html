@@ -1,81 +1,119 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>授業登録</title>
-  </head>
 
-  <body>
-    <form method="POST">
-      <div class="Form">
-        <div class="Form-Item">
-          <p class="Form-Item-Label">授業名</p>
-          <input type="text" class="Form-Item-Input" placeholder="例）4232116" />
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label"></p>
-          <select name="gakusai" id="rules">
-            <option value="">学期</option>
-            {% for semester in semesters %}
-              <option value="{{ semester.id }}">{{ semester.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label">推奨学年</p>
-          <input type="text" class="Form-Item-Input" placeholder="例）4232116" />
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label">教材費</p>
-          <input type="text" class="Form-Item-Input" placeholder="例）4232116" />
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label">検定費</p>
-          <input type="text" class="Form-Item-Input" placeholder="例）4232116" />
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label"></p>
-          <select name="gakusai" id="rules">
-            <option value="">学則科目名</option>
-            {% for category in categorys %}
-              <option value="{{ category.id }}">{{ category.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label">開講年度</p>
-          <input type="text" class="Form-Item-Input" placeholder="例）4232116" />
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label">単位時間</p>
-          <input type="text" class="Form-Item-Input" placeholder="例）4232116" />
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label"></p>
-          <select name="gakusai" id="rules">
-            <option value="">曜日</option>
-            <option value="1">月</option>
-            <option value="2">火</option>
-            <option value="3">水</option>
-            <option value="4">木</option>
-            <option value="5">金</option>
-          </select>
-        </div>
-        <div class="Form-Item">
-          <p class="Form-Item-Label"></p>
-          <select name="gakusai" id="rules">
-            <option value="">コマ</option>
-          </select>
-        </div>
-        <div class="quantity-container">
-          <button class="minus">−</button>
-          <button class="plus">＋</button>
-        </div>
-        <div class="login-input">
-          <input id="submit" type="submit" value="ログイン" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>授業登録</title>
+</head>
+
+<body>
+  <form method="POST" action="{% url 'subjects:subject_register' %}">
+    {% csrf_token %}
+    <div class="Form">
+      <div class="Form-Item">
+        <p class="Form-Item-Label">授業名</p>
+        <input type="text" class="Form-Item-Input" placeholder="例）4232116" name="subject_name" />
+      </div>
+      <div class="Form-Item">
+        <p class="Form-Item-Label"></p>
+        <select name="schedule_id" id="rules" required>
+          <option value="">学期</option>
+          {% for schedule in schedules %}
+          <option value="{{ schedule.id }}">{{ schedule.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="Form-Item">
+        <p class="Form-Item-Label">推奨学年</p>
+        <input type="text" class="Form-Item-Input" placeholder="例）4232116" name="grade_leval">
+      </div>
+      <div class="Form-Item">
+        <p class="Form-Item-Label">教材費</p>
+        <input type="text" class="Form-Item-Input" placeholder="例）4232116" name="material_cost" />
+      </div>
+      <div class="Form-Item">
+        <p class="Form-Item-Label">検定費</p>
+        <input type="text" class="Form-Item-Input" placeholder="例）4232116" name="exam_fee" />
+      </div>
+      <div class="Form-Item">
+        <p class="Form-Item-Label"></p>
+        <select name="category_id" id="rules" required>
+          <option value="">学則科目名</option>
+          {% for category in categories %}
+          <option value="{{ category.id }}">{{ category.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="Form-Item">
+        <p class="Form-Item-Label">コマ数</p>
+        <input type="text" class="Form-Item-Input" placeholder="例）4232116" name="creadit_maxnum" />
+      </div>
+      <div class="Form-Item">
+        <p class="Form-Item-Label">単位時間</p>
+        <input type="text" class="Form-Item-Input" placeholder="例）4232116" name="creadit_threshold" />
+      </div>
+      <div id="select-container">
+        <div class="select-set">
+          <div class=" Form-Item">
+            <p class="Form-Item-Label"></p>
+            <select name="week[]" id="rules" required>
+              <option value="">曜日</option>
+              <option value="1">月</option>
+              <option value="2">火</option>
+              <option value="3">水</option>
+              <option value="4">木</option>
+              <option value="5">金</option>
+            </select>
+          </div>
+          <div class="Form-Item">
+            <p class="Form-Item-Label"></p>
+            <select name="num[]" id="rules" required>
+              <option value="">コマ</option>
+              <option value="1">1コマ</option>
+              <option value="2">2コマ</option>
+              <option value="3">3コマ</option>
+              <option value="4">4コマ</option>
+            </select>
+          </div>
         </div>
       </div>
-    </form>
-  </body>
+      <div class="quantity-container">
+        <button type="button" id="minus">−</button>
+        <button type="button" id="plus">＋</button>
+      </div>
+      <div class="login-input">
+        <input id="submit" type="submit" value="登録" />
+      </div>
+    </div>
+  </form>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const container = document.getElementById("select-container");
+      const plusBtn = document.getElementById("plus");
+      const minusBtn = document.getElementById("minus");
+
+      plusBtn.addEventListener("click", () => {
+        const firstSet = container.querySelector(".select-set");
+        const newSet = firstSet.cloneNode(true);
+
+        // 入力状態をリセット
+        newSet.querySelectorAll("select").forEach(select => {
+          select.selectedIndex = 0;
+        });
+
+        container.appendChild(newSet);
+      });
+
+      minusBtn.addEventListener("click", () => {
+        const sets = container.querySelectorAll(".select-set");
+        if (sets.length > 1) {
+          sets[sets.length - 1].remove();
+        }
+      });
+    });
+  </script>
+</body>
+
 </html>
