@@ -20,6 +20,8 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from django.db.models import *
 from django.core.serializers.json import DjangoJSONEncoder
+from datetime import datetime
+import pytz
 
 # 登録画面の遷移
 @login_required
@@ -46,7 +48,13 @@ def attendance_page(request):
 def attendance(request):
     if request.method == 'POST':
         user = request.user
-        date = datetime.date.today()
+        # 日本のタイムゾーン
+        jst = pytz.timezone('Asia/Tokyo')
+
+        # JSTでの現在の日付を取得
+        date = datetime.now(jst).date()
+
+        print(date)
 
         subject_id = request.POST.get('subject')
         lesson = request.POST.get('lesson')
@@ -55,8 +63,6 @@ def attendance(request):
 
         # 出席情報を登録
         flag = 1 if f'attendance_{subject_id}' in request.POST else 0
-        
-        print(f"date={date},subject_id={subject_id},lesson={lesson},week={week},flag={flag},mytimetable={mytimetable_id}")
         
         # Subjectオブジェクトを取得
         subject = get_object_or_404(Subject, id=subject_id)
