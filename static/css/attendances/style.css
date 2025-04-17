@@ -1,4 +1,5 @@
 /* ===================時間割========================= */
+
 td {
   width: 15vw;
   height: auto;
@@ -14,6 +15,7 @@ button {
   height: 100%;
   border: none;
 }
+
 table {
   width: 100%;
   max-width: 428px;

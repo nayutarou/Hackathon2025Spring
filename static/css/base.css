@@ -2,6 +2,7 @@
 
 /* とりあえずスマホ画面だけ */
 
+
 html,
 body {
   height: 100vh;
@@ -11,6 +12,12 @@ body {
 
 .flex {
   display: flex;
+}
+
+.text-none {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
 }
 
 .font-22 {
@@ -33,13 +40,14 @@ body {
   margin-left: 20px;
 }
 
-.form{
+.form {
   width: 90%;
   margin: 0 auto;
 }
-#semester-select{
+
+#semester-select {
   border: none;
-  
+
 }
 
 footer {
@@ -51,6 +59,7 @@ footer {
   align-items: center;
   justify-content: center;
 }
+
 footer p {
   text-align: center;
   color: #434343;
@@ -58,12 +67,14 @@ footer p {
 }
 
 /************* humberger **************/
-.color_footer{
+.color_footer {
   background: #85C89C;
 }
-.color_footer_top{
+
+.color_footer_top {
   background-color: #23A852;
 }
+
 .menu-container {
   position: relative;
   margin-left: 10px;
@@ -80,14 +91,17 @@ footer p {
   cursor: pointer;
   margin-top: 10px;
 }
-.color_menu{
+
+.color_menu {
   color: #23A852;
 }
-.flex_footer{
+
+.flex_footer {
   display: flex;
   margin-left: auto;
   margin-right: 10px;
 }
+
 .hamburger span {
   height: 4px;
   width: 100%;
@@ -115,9 +129,11 @@ footer p {
     transform: translateX(180px);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
   }
+
   40%,
   100% {
     opacity: 1;
@@ -158,7 +174,8 @@ footer p {
 }
 
 .text-center li:last-child {
-  margin-top: auto; /* ← これで一番下に寄せる！ */
+  margin-top: auto;
+  /* ← これで一番下に寄せる！ */
 }
 
 .hamburger.open span:nth-child(2) {
@@ -180,5 +197,17 @@ footer p {
   .logo {
     width: 40px;
     height: auto;
+  }
+}
+
+@media screen and (min-width: 441px) {
+
+  .logo {
+    width: 40px;
+    height: auto;
+  }
+
+  header {
+    height: 80px;
   }
 }
