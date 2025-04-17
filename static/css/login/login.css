@@ -2,17 +2,28 @@
 
 /* Register page styles */
 
+.flex {
+    display: flex;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.justify-center{
+    justify-content: center;
+}
+
+.form-center{
+    margin: 0 auto;
+    width: 90vw;
+}
 
 h1 {
-    font-size: 40px;
+    font-size: 32px;
     /* font-family: Robot; */
     color: #333;
     text-align: center;
-}
-
-h2 {
-    font-size: 2em;
-    color: #9D9D9D;
 }
 
 label{
@@ -31,7 +42,7 @@ label{
 
 .login-input {
     background-color: #68CBA7;
-    height: 10vh;
+    height: 60px;
     width: 80%;
     border-radius: 10px;
     margin: 5vh auto;
@@ -71,18 +82,10 @@ a {
 
 .flex{
     display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#image-div{
-    width:  20%;
-    height: 20%;
-    margin: 0;
 }
 
 img{
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
+    width: 35px;
+    height: auto;
+    /* object-fit: contain; */
 }

@@ -33,8 +33,13 @@ body {
   margin-left: 20px;
 }
 
-.b-bottom {
-  border-bottom: 1px solid black;
+.form{
+  width: 90%;
+  margin: 0 auto;
+}
+#semester-select{
+  border: none;
+  
 }
 
 footer {
@@ -53,25 +58,39 @@ footer p {
 }
 
 /************* humberger **************/
-
+.color_footer{
+  background: #85C89C;
+}
+.color_footer_top{
+  background-color: #23A852;
+}
 .menu-container {
   position: relative;
+  margin-left: 10px;
 }
 
 /* ハンバーガーアイコン */
 .hamburger {
-  width: 30px;
-  height: 24px;
+  width: 34px;
+  height: 8px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 4px;
+  justify-content: center;
   cursor: pointer;
+  margin-top: 10px;
 }
-
+.color_menu{
+  color: #23A852;
+}
+.flex_footer{
+  display: flex;
+  margin-left: auto;
+  margin-right: 10px;
+}
 .hamburger span {
   height: 4px;
   width: 100%;
-  background: #333;
   border-radius: 2px;
   transition: all 0.3s ease;
 }
