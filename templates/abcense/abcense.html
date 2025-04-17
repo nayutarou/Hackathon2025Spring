@@ -1,35 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% load static %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="descliption" content="欠席一覧ページ">
-  <link rel="stylesheet" href="absences.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Sans+JP:wght@100..900&family=Pacifico&family=Sansita:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&family=Yuji+Syuku&display=swap"
-    rel="stylesheet">
-  <title>欠席一覧</title>
-</head>
+<meta name="descliption" content="欠席一覧ページ" />
+{% block css %}
+  <link rel="stylesheet" href="absences.css" />
+{% endblock %}
 
-<body style="background-color: #F4F5F7;">
-  <header>
-    <nav>
-      <div class="footer">
-        <img src="../../static/image/image.png" alt="アイコン">
-        <span style="padding-left: 10%; font-size: large;">Unitrex</span>
-        <input type="checkbox" id="overlay-input" />
-        <label class="menu-button" for="overlay-input" id="overlay-button">
-          <span class="menu-label">menu</span>
-          <span class="hamburger-icon"></span>
-        </label>
-      </div>
+{% block title %}
+  欠席一覧
+{% endblock %}
 
-      </ul>
-    </nav>
-  </header>
+{% block content %}
   <main>
     <!-- ここから検索結果 -->
     <table>
@@ -41,21 +22,16 @@
       </thead>
       <tbody>
         {% for item in attendances %}
-        <tr>
-          <td>{{ item.subject }}</td>
-          <td>
-            {% for date in item.dates %}
-            <p>{{ date }}</p>
-            {% endfor %}
-          </td>
-        </tr>
+          <tr>
+            <td>{{ item.subject }}</td>
+            <td>
+              {% for date in item.dates %}
+                <p>{{ date }}</p>
+              {% endfor %}
+            </td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
   </main>
-</body>
-
-</html>
-</body>
-
-</html>
+{% endblock %}

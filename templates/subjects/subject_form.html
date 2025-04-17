@@ -1,13 +1,15 @@
-<!DOCTYPE html>
-<html lang="ja">
+{% extends 'base.html' %}
+{% load static %}
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>授業登録</title>
-</head>
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/attendances/style.css' %}">
+{% endblock %}
 
-<body>
+{% block title %}授業登録{% endblock %}
+
+{% block content %}
+
+
   <form method="POST" action="{% url 'subjects:subject_register' %}">
     {% csrf_token %}
     <div class="Form">
@@ -114,6 +116,5 @@
       });
     });
   </script>
-</body>
 
-</html>
+  {% endblock %}

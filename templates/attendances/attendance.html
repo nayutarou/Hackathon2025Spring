@@ -1,19 +1,14 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ja">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>出席送信</title>
-  <link rel="stylesheet" href="{% static 'css/attendance/attendance.css' %}" />
-</head>
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/attendance/attendance.css' %}" />
+{% endblock %}
 
-<body>
-  <header>
-    <h3>Unitrex</h3>
-    <p id="menu">menu</p>
-  </header>
+{% block title %}出席送信{% endblock %}
+
+{% block content %}
+
 
   <p>Subject ID: {{ subject_id }}</p>
   <p>MyTimetable ID: {{ mytimetable_id }}</p>
@@ -40,6 +35,4 @@
     <input type="submit" id="send-btn" value="送信する" />
   </form>
 
-</body>
-
-</html>
+{% endblock %}

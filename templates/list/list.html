@@ -1,22 +1,17 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>履修一覧</title>
-  <link rel="stylesheet" href="{% static 'css/list/list.css' %}">
-</head>
-<header>
-  <h3>X</h3>
-  <h2>履修科目</h2>
-  <h2>menu</h2>
-</header>
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/list/list.css' %}" />
+{% endblock %}
 
-<body>
+{% block title %}
+  履修一覧
+{% endblock %}
+
+{% block content %}
   <div class="search-box">
-    <input type="text" placeholder="教科または先生で検索">
+    <input type="text" placeholder="教科または先生で検索" />
   </div>
   <div class="item">
     <select name="school-rules" id="rules">
@@ -31,18 +26,16 @@
   </div>
 
   {% for subject in subjects %}
-  <div class="subject">
-    <div class="shadow"></div>
-    <div class="element">
-      <p class="subject-name">{{ subject.subject_name }}</p>
-      <p class="explanation">単位数: {{ subject.creadit_maxnum }}</p>
-      <p class="explanation">学則科目名: {{ subject.category.name }}</p>
-      <form action="{% url 'subjects:syllabus_detail' subject.id %}" method="get">
-        <button type="submit" class="subject-button">詳細表示</button>
-      </form>
+    <div class="subject">
+      <div class="shadow"></div>
+      <div class="element">
+        <p class="subject-name">{{ subject.subject_name }}</p>
+        <p class="explanation">単位数: {{ subject.creadit_maxnum }}</p>
+        <p class="explanation">学則科目名: {{ subject.category.name }}</p>
+        <form action="{% url 'subjects:syllabus_detail' subject.id %}" method="get">
+          <button type="submit" class="subject-button">詳細表示</button>
+        </form>
+      </div>
     </div>
-  </div>
   {% endfor %}
-</body>
-
-</html>
+{% endblock %}

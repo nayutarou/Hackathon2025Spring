@@ -1,17 +1,16 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ja">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>単位確認</title>
-  <link rel="stylesheet" href="{% static 'css/Credit_Confirmation/Credit_Confirmation.css' %}">
-  <link rel="stylesheet" href="{% static 'css/reset.css' %}">
-</head>
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/Credit_Confirmation/Credit_Confirmation.css' %}">
+<link rel="stylesheet" href="{% static 'css/reset.css' %}">
+{% endblock %}
 
-<body>
-  <header>
+{% block title %}単位確認{% endblock %}
+
+{% block content %}
+
+  {% comment %} <header>
     <div class="header">
       <a href="{% url 'attendances:non_attendance_list' %}" class="a_tag">✖</a>
       <p class="title_tag">単位確認</p>
@@ -21,7 +20,7 @@
         <span class="hamburger-icon"></span>
       </label>
     </div>
-  </header>
+  </header> {% endcomment %}
 
   <div class="custom-selects">
     <select class="custom-select">
@@ -61,6 +60,5 @@
       });
     });
   </script>
-</body>
 
-</html>
+  {% endblock %}

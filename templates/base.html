@@ -29,7 +29,7 @@
   </title>
 </head>
 
-<body>
+<body style="height: 100vh;">
   <header class="flex align-center b-bottom">
     <a class="flex align-center ml-20" href="{% url 'attendances:index' %}">
       <img class="logo" src="{% static 'image/logo.png' %}" alt="Logo" />
@@ -54,19 +54,19 @@
             <a href="{% url 'attendances:index' %}">TOP</a>
           </li>
           <li>
-            <a href="{% url 'attendances:index' %}">履修登録</a>
+            <a href="{% url 'attendances:mytimetable_regist' %}">履修登録</a>
           </li>
           <li>
-            <a href="{% url 'attendances:index' %}">履修一覧</a>
+            <a href="{% url 'subjects:subject_list' %}">履修一覧</a>
           </li>
           <li>
-            <a href="{% url 'attendances:index' %}">単位確認</a>
+            <a href="{% url 'attendances:credit_check' %}">単位確認</a>
           </li>
           <li>
-            <a href="{% url 'attendances:index' %}">授業登録</a>
+            <a href="{% url 'subjects:show_subject_form' %}">授業登録</a>
           </li>
           <li>
-            <a href="{% url 'attendances:index' %}">欠席送信</a>
+            <a href="{% url 'attendances:non_attendance_list' %}">欠席送信</a>
           </li>
           <li>
             <a href="{% url 'logout' %}">ログアウト</a>
