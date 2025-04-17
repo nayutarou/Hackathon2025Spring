@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>出席送信</title>
+  <link rel="stylesheet" href="{% static 'css/attendance/attendance.css' %}" />
+</head>
+
+<body>
+  <header>
+    <h3>Unitrex</h3>
+    <p id="menu">menu</p>
+  </header>
+
+  <p>Subject ID: {{ subject_id }}</p>
+  <p>MyTimetable ID: {{ mytimetable_id }}</p>
+
+  <form method="POST" action="{% url 'attendances:attendance_regist' %}">
+    {% csrf_token %}
+
+    <div class="toggle-button">
+      <p class="timetable">
+        {{ lesson }}コマ目：{{ subject_name }}
+      </p>
+
+      <!-- トグルボタン（ON: 出席, OFF: 欠席） -->
+      <label class="toggle-label">
+        <input type="checkbox" class="toggle-input" name="attendance_{{ subjectclass.id }}" value="1" />
+        <span class="slider"></span>
+      </label>
+
+      <!-- 他の情報は hidden で送る -->
+      <input type="hidden" name="subject" value="{{ subject_id }}">
+      <input type="hidden" name="mytimetable_id" value="{{ mytimetable_id }}">
+    </div>
+
+    <input type="submit" id="send-btn" value="送信する" />
+  </form>
+
+</body>
+
+</html>

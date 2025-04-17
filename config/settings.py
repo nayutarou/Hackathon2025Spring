@@ -137,3 +137,7 @@ AUTHENTICATION_BACKENDS = [
     # 'accounts.backends.EmailBackend',  # ← 追加
     'django.contrib.auth.backends.ModelBackend',  # 念のため残しておくと安心
 ]
+
+# メディアファイル（画像など）を保存する場所
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'  # media フォルダを指定

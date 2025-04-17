@@ -1,0 +1,523 @@
+/*  すべての上に少し空白を取って、余裕を持たせている。 */
+body {
+    margin-top: 4vh;
+    background-color: #F4F5F7;
+}
+
+/* ===================時間割========================= */
+
+table {
+    width: 100%;
+    max-width: 428px;
+    margin: 0 auto;
+    /* 線を一つに重ねる */
+    border-collapse: collapse;
+    border: solid 1px #000;
+}
+
+/* 表の一番右の幅を4%に制限。 */
+tr th:last-child {
+    width: 4%;
+}
+
+th,
+td {
+    border: solid 1px #C8C8C8;
+    height: 67px;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    font-weight: 100;
+}
+
+tr.dayofweek th {
+    height: 6vh;
+}
+
+/* square-buttonクラスのスタイル */
+.square-button {
+    display: block;
+    width: 80%;
+    height: 80%;
+    margin: 0 auto;
+    padding: 0;
+    background-color: #B9A9FA;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    font-size: 10%;
+    border-radius: 10px;
+}
+
+/* 動きの設定 */
+@keyframes flip {
+    from {
+        transform: rotateY(0);
+    }
+
+    to {
+        transform: rotateY(360deg);
+    }
+}
+
+/* アニメーション「flip」を指定 */
+.flip:hover {
+    animation: flip 1s ease-in-out;
+}
+
+
+
+/* =============レイアウト設定=============== */
+
+
+/* ▼ ドロップダウンリストのデフォルト状態（非表示） */
+.dropdown__lists {
+    visibility: hidden;
+    opacity: 0;
+    transform: scaleY(0) translateX(-50%);
+    transform-origin: center top;
+    transition: all 0.1s ease;
+    position: absolute;
+    top: 18%;
+    left: 50%;
+    /* 中央配置 */
+    background-color: rgba(255, 255, 255, 0.95);
+    list-style: none;
+    padding: 3%;
+    margin: 0;
+    text-align: center;
+    border-radius: 8px;
+    /* 全体を丸くする */
+    border: solid 1px white;
+}
+
+/* ▼ ホバー時に表示される */
+.gnavi__list:hover .dropdown__lists {
+    visibility: visible;
+    opacity: 1;
+    transform: scaleY(1) translateX(-50%);
+}
+
+/* ▼ ナビ全体を中央揃えにするためのラッパー調整 */
+.gnavi__wrap {
+    text-align: center;
+}
+
+/* ▼ ナビリスト自体の横並び防止＆中央揃え */
+.gnavi__lists {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+/* ▼ メニュータイトルのリンクの装飾と中央寄せ */
+.gnavi__list>a {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    /* 下線消去 */
+    color: #4D4B4B;
+    padding: 0px 0.3em 10px 0;
+    /* 矢印分右に余白 */
+}
+
+/* ▼ メニュータイトルの右に下矢印 */
+.gnavi__list>a::after {
+    content: '';
+    position: absolute;
+    top: 28%;
+    right: -1em;
+    transform: translateY(-50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    border-bottom: 1.5px solid #4D4B4B;
+    border-right: 1.5px solid #4D4B4B;
+    pointer-events: none;
+    text-decoration: none;
+}
+
+/* ▼ ドロップダウンリストのリンク装飾（下線消す） */
+.dropdown__lists a {
+    text-decoration: none;
+    color: #4D4B4B;
+    display: block;
+    padding: 10px;
+    font-size: 90%;
+}
+
+.dropdown__lists a:hover {
+    border-bottom: solid 1.5px #4D4B4B;
+}
+
+/* ========================ハンバーガーボタン=================== */
+.menu-button {
+    margin-right: 10%;
+}
+
+#overlay-button span:before,
+#overlay-button span:after {
+    content: "";
+    position: absolute;
+    height: 1.3px;
+    width: 30px;
+    /* 幅を狭く */
+    border-radius: 1px;
+    transition: all .2s ease-in-out;
+    margin-top: 10%;
+}
+
+#overlay-input {
+    display: none;
+}
+
+input[type=checkbox]:checked~#overlay-button span {
+    background: transparent;
+}
+
+input[type=checkbox]:checked~#overlay-button span:before {
+    transform: rotate(45deg) translate(5px, 5px);
+    /* 回転を小さく */
+}
+
+input[type=checkbox]:checked~#overlay-button span:after {
+    transform: rotate(-45deg) translate(5px, -5px);
+    /* 回転を小さく */
+}
+
+#overlay {
+    height: 100vh;
+    width: 100vw;
+    background: #85C89C;
+    z-index: 2;
+    visibility: hidden;
+    position: fixed;
+}
+
+#overlay ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    height: 100vh;
+    padding-left: 0;
+    list-style-type: none;
+}
+
+#overlay ul li {
+    padding: 1em;
+}
+
+#overlay ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+
+/* ハンバーガー＋Menu文字を横並びに */
+#overlay-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    /* アイコンと文字の間隔 */
+    background: transparent;
+}
+
+/* ハンバーガーアイコンの線（上下2本） */
+.hamburger-icon {
+    position: relative;
+    width: 30px;
+    height: 10px;
+    background: transparent;
+    margin: 10%;
+}
+
+/* 上下の線のスタイル */
+.hamburger-icon::before,
+.hamburger-icon::after {
+    content: "";
+    position: absolute;
+    height: 2px;
+    width: 30px;
+    border-radius: 1px;
+    transition: all .2s ease-in-out;
+}
+
+.hamburger-icon::before {
+    background-color: #23A852;
+    top: 0;
+}
+
+.hamburger-icon::after {
+    background-color: #85C89C;
+    top: 6px;
+}
+
+.menu-label {
+    font-size: 14px;
+    color: #23A852;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.link_a {
+    text-decoration: none;
+    color: #23A852;
+    font-size: 10px;
+}
+
+.link_all:hover a .link_all:hover img {
+    opacity: 0.7;
+    transform: scale(1.05);
+    transition: 0.3s;
+}
+
+.link_all {
+    text-align: end;
+    margin-right: 10px;
+    margin-bottom: 2%;
+}
+
+.img_a {
+    width: 8px;
+    height: 8px;
+    margin-top: -7px;
+}
+
+.flex_b {
+    display: flex;
+}
+
+/* =====================検索=========================== */
+.search_container {
+    margin: 0 auto;
+    box-sizing: border-box;
+    position: relative;
+    border: 1.3px solid #999;
+    padding: 3px 10px 3px 35px;
+    /* ← 左の余白を広げてボタンを避ける */
+    border-radius: 20px;
+    width: 75%;
+    overflow: hidden;
+    background-color: #F4F5F7;
+    margin-top: 4vh;
+}
+
+/* 🔍 アイコンボタン */
+.search_container button {
+    position: absolute;
+    top: 35%;
+    left: 15px;
+    border: none;
+    color: #ABABAB;
+    font-size: 0.6em;
+    padding: 0;
+    line-height: 1;
+}
+
+/* テキスト入力 */
+.search_container input[type="text"] {
+    border: none;
+    height: 2.4em;
+    width: 100%;
+    background-color: #F4F5F7;
+    font-size: 10px;
+}
+
+.search_container input[type="text"]:focus {
+    outline: 0;
+}
+
+/* =====================検索結果=========================== */
+
+.checkbox-box {
+    display: flex;
+    justify-content: space-between;
+    /* 左右に配置 */
+    align-items: center;
+    /* 縦位置を中央に */
+    background-color: white;
+    padding: 4px 4% 5px 2%;
+    width: 60%;
+    margin: 0 auto;
+    margin-top: 2%;
+}
+
+.target-element {
+    position: relative;
+}
+
+.checkbox_icon {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    appearance: none;
+    border-radius: 10px;
+    background: #FFFFFF;
+    border: solid 2px #808080;
+    border-radius: 4px;
+    box-shadow: 0 0 0 0 transparent;
+}
+
+.checkbox_icon::before {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    content: "";
+    opacity: 0;
+    background-image: url("Group%20468.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+.checkbox_icon:checked::before {
+    opacity: 1;
+}
+
+.label {
+    font-size: 12px;
+    color: #5E5E5E;
+    margin-left: 5%;
+}
+
+.checkboxs {
+    width: 30px;
+    height: 30px;
+    border-radius: 90%;
+}
+
+/* 入力欄を非表示（でもアクセシブル） */
+.circle-checkbox input {
+    display: none;
+}
+
+/* 見た目用の丸い要素 */
+.custom-circle {
+    width: 17px;
+    height: 17px;
+    border: 0.02px solid #555;
+    border-radius: 50%;
+    /* ←これで丸くする */
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+/* チェックが入ったときの中身 */
+.circle-checkbox input:checked+.custom-circle::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 21px;
+    height: 21px;
+    background-color: #85FD93;
+    border-radius: 50%;
+}
+
+
+/* チェックマーク（白色）：before */
+.circle-checkbox input:checked+.custom-circle::before {
+    content: "✓";
+    position: absolute;
+    top: -2px;
+    left: 3px;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+/* ==================submitボタン================ */
+.button input {
+    border: solid 1.3px #B3EBC6;
+    border-radius: 25px;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 auto;
+    margin-bottom: 2vh;
+    max-width: 220px;
+    padding: 7px 25px;
+    color: #B3EBC6;
+    font-size: 10px;
+    font-weight: 600;
+    background: white;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.button {
+    margin-top: 2%;
+}
+
+
+/* =================ポップアップ=========================- */
+
+
+.modal {
+    display: none;
+    /* 最初は非表示 */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* 背景を半透明に */
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 20% auto;
+    padding: 20px 20px 10px 20px;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1001;
+    position: relative;
+}
+
+
+.modal-btn-attendance {
+    background-color: #68CBA7;
+    border-radius: 30px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 auto;
+    width: 70%;
+    padding: 15px 30px;
+    color: white;
+    font-weight: 400;
+    text-decoration: none;
+    margin-bottom: 5%;
+    font-size: 20px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.modal-btn-absence {
+    background-color: #FF7878;
+    border-radius: 30px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 0 auto;
+    width: 70%;
+    padding: 15px 30px;
+    color: white;
+    font-weight: 400;
+    text-decoration: none;
+    margin-bottom: 5%;
+    font-size: 20px;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.2);
+}
