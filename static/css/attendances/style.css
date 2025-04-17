@@ -30,8 +30,10 @@ tr.dayofweek th {
 
 /* square-buttonクラスのスタイル */
 .square-button {
-    display: block;
-    width: 80%;
+    display: flex;
+  justify-content: center;  /* 横方向中央 */
+  align-items: center;      /* 縦方向中央 */
+    width: 55px;
     height: 80%;
     margin: 0 auto;
     padding: 0;
@@ -39,8 +41,11 @@ tr.dayofweek th {
     color: white;
     text-decoration: none;
     text-align: center;
-    font-size: 10%;
+    font-size: 6px;
     border-radius: 10px;
+    white-space: normal;       /* 折り返し許可 */
+    word-wrap: break-word;     /* 単語の途中でも折り返し */
+    overflow-wrap: break-word; 
 }
 
 
