@@ -49,21 +49,6 @@ tr.dayofweek th {
     border-radius: 10px;
 }
 
-/* 動きの設定 */
-@keyframes flip {
-    from {
-        transform: rotateY(0);
-    }
-
-    to {
-        transform: rotateY(360deg);
-    }
-}
-
-/* アニメーション「flip」を指定 */
-.flip:hover {
-    animation: flip 1s ease-in-out;
-}
 
 
 
