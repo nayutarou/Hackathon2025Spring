@@ -1,26 +1,14 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="ja">
+{% block css %}
+{% comment %} <link rel="stylesheet" href="{% static 'css/attendances/style.css' %}"> {% endcomment %}
+<link rel="stylesheet" href="{% static 'css/attendance/mytimetable.css' %}">
+{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>時間割</title>
-    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/attendance/mytimetable.css' %}">
-</head>
+{% block title %}時間割{% endblock %}
 
-<body>
-    <header class="footer">
-        <span class="site-title">Unitrex</span>
-        <input type="checkbox" id="overlay-input" />
-        <label for="overlay-input" id="overlay-button" class="menu-button">
-            <span class="menu-label">menu</span>
-            <span class="hamburger-icon"></span>
-        </label>
-    </header>
+{% block content %}
 
     <!-- GETリクエストで学期変更を即反映 -->
     <!-- 学期選択フォーム（GETリクエストで学期IDを渡す） -->
@@ -38,18 +26,18 @@
     {% if is_registered %}
 
     {% else %}
-    <table>
-        <tr>
+    <table class="" >
+        <tr class="">
             <th></th>
             {% for day in weekdays %}
-            <th>{{ day }}</th>
+            <td class="w-19" >{{ day }}</td>
             {% endfor %}
         </tr>
         {% for i in "12345" %}
         <tr>
-            <th>{{ i }}限</th>
+            <td class="" >{{ i }}限</td>
             {% for day in weekdays %}
-            <th id="{{ day }}_{{ i }}"></th>
+            <th class="" id="{{ day }}_{{ i }}"></th>
             {% endfor %}
         </tr>
         {% endfor %}
@@ -57,23 +45,30 @@
     {% endif %}
 
     {% if not is_registered %}
-    <form method="POST" action="{% url 'attendances:mytimetable_regist' %}">
+    <form class="mt-40" method="POST" action="{% url 'attendances:mytimetable_regist' %}">
         {% csrf_token %}
         <input type="hidden" name="semester_id" value="{{ selected_semester.id }}">
 
         {% for subject_class in subject_classes|dictsort:"subject.subject_name" %}
             {% ifchanged subject_class.subject.id %}
-            <label>
-                <input type="checkbox"
-                    name="subject_ids"
-                    value="{{ subject_class.subject.id }}"
-                    class="subject-check"
-                    data-subject-id="{{ subject_class.subject.id }}">
-                {{ subject_class.subject.subject_name }}
-            </label><br>
+            <div class="b-1 w-80 mt-5" >
+                <label>
+                    {{ subject_class.subject.subject_name }}
+                    <input type="checkbox"
+                        name="subject_ids"
+                        value="{{ subject_class.subject.id }}"
+                        class="subject-check"
+                        data-subject-id="{{ subject_class.subject.id }}">
+                </label><br>
+            </div>
             {% endifchanged %}
         {% endfor %}
-        <button type="submit">登録</button>
+        {% if not subject_class %}
+    
+        {% else %}
+            <button type="submit">登録</button>
+        {% endif %}
+
     </form>
     {% else %}
     <p>この学期の時間割はすでに登録済みです。</p>
@@ -107,7 +102,7 @@
             let hasOverlap = false;
         
             // すべてのセルから重複スタイルを削除
-            document.querySelectorAll('td').forEach(td => {
+            document.querySelectorAll('th').forEach(td => {
                 td.classList.remove('overlap');
                 td.innerHTML = ''; // セルの内容をクリア
             });
@@ -179,9 +174,18 @@
             checkForOverlaps();
         });
         
+        // 共通のスタイル更新関数
+        function updateStyle(checkbox, box, label) {
+            if (checkbox.checked) {
+                box.style.backgroundColor = '#7C5FF0';
+                label.style.color = '#FFFFFF';
+            } else {
+                box.style.backgroundColor = '';
+                label.style.color = '#5E5E5E';
+            }
+        }
+
         console.log(subjectClasses);
         </script>
         
-</body>
-
-</html>
+{% endblock %}
