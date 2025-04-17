@@ -7,7 +7,7 @@ import math
 from django.conf import settings
 from .models import Attendance,MYTimetable,Semester # DBのインポート
 from subjects.models import SubjectClass,Subject,Notice
-from django.shortcuts import render,redirect,get_object_or_404 # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
+from django.shortcuts import render,redirect,get_object_or_404,reverse # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
 from django.contrib.auth.decorators import login_required # ログインしてないユーザを制限する
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse,Http404,HttpResponse
@@ -89,65 +89,52 @@ def attendance(request):
 
 # MY時間割 時間割モデルに登録
 @login_required
-# requestの他にURLからsmester_nameを受け取る\
 def mytimetable_regist(request):
-    # 全学期を取得（セレクトボックス表示用）
     semesters = Semester.objects.all()
+    user = request.user
+    weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri"]
 
     if request.method == 'POST':
-        # 選択された科目ID一覧を取得（チェックボックスから）
         subject_ids = request.POST.getlist('subject_ids')
-
-        # フォームで選ばれた学期のIDを取得（セレクトから）
         semester_id = request.POST.get('semester_id')
 
-        # 科目が選ばれていなければ警告を出してリダイレクト
         if not subject_ids:
             messages.warning(request, "科目が選択されていません。")
-            return redirect('mytimetable_regist')  # URL name に合わせてね
+            return redirect(f"{reverse('attendances:mytimetable_regist')}?semester_id={semester_id}")
 
-        # 学期のオブジェクトを取得（なければ404）
         semester = get_object_or_404(Semester, id=semester_id)
-
-        # 対象のSubjectClassを取得（subject 外部キーに基づく）
         subject_objects = SubjectClass.objects.filter(subject__in=subject_ids)
-
-        # 現在ログイン中のユーザを取得
-        user = request.user
-
-        # MYTimetableインスタンスを作成してリストに追加
         timetable_list = [
             MYTimetable(user=user, subjectclass=subject_class, semester=semester)
             for subject_class in subject_objects
         ]
 
         try:
-            # 一括でDBに登録（重複などは例外処理）
             MYTimetable.objects.bulk_create(timetable_list)
             messages.success(request, "時間割が正常に登録されました。")
         except IntegrityError:
             messages.error(request, "登録中にエラーが発生しました。既に登録されている可能性があります。")
 
-        # 登録完了後のリダイレクト先（一覧ページなど）
         return redirect('attendances:index')
 
     else:
-        # GETメソッド時：初期表示で最初の学期を選択状態にする
-        default_semester = Semester.objects.first()
+        # GET処理（選択された学期IDがURLに含まれていればそれを使う）
+        semester_id = request.GET.get('semester_id')
+        selected_semester = get_object_or_404(Semester, id=semester_id) if semester_id else Semester.objects.first()
 
-        # 曜日のリストをビューで作成
-        weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+        # 選択された学期に対して、すでに登録されているか判定
+        is_registered = MYTimetable.objects.filter(user=user, semester=selected_semester).exists()
 
-        # 全てのSubjectClassを取得（必要があればここでフィルタも可能）
         subject_classes = SubjectClass.objects.all()
 
-        # テンプレートへ渡すデータ
         return render(request, 'attendances/mytimetable.html', {
             'subject_classes': subject_classes,
             'semesters': semesters,
-            'selected_semester': default_semester,
-            'weekdays':weekdays,
+            'selected_semester': selected_semester,
+            'weekdays': weekdays,
+            'is_registered': is_registered,
         })
+
     
 """
     user = models.ForeignKey(User, on_delete=models.CASCADE) # 外部キーのuser_id

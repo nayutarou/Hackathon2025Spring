@@ -22,6 +22,20 @@
         </label>
     </header>
 
+    <!-- GETリクエストで学期変更を即反映 -->
+    <!-- 学期選択フォーム（GETリクエストで学期IDを渡す） -->
+    <form method="GET" action="{% url 'attendances:mytimetable_regist' %}">
+        <label for="semester">学期を選択：</label>
+        <select name="semester_id" id="semester" onchange="this.form.submit()">
+            {% for semester in semesters %}
+                <option value="{{ semester.id }}" {% if semester.id == selected_semester.id %}selected{% endif %}>
+                    {{ semester.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+
     <table>
         <tr>
             <th></th>
@@ -38,38 +52,30 @@
         </tr>
         {% endfor %}
     </table>
-    
 
+    {% if not is_registered %}
     <form method="POST" action="{% url 'attendances:mytimetable_regist' %}">
         {% csrf_token %}
-    
-        <label for="semester">学期を選択：</label>
-        <select name="semester_id" id="semester">
-            {% for semester in semesters %}
-            <option value="{{ semester.id }}" {% if semester.id == selected_semester.id %}selected{% endif %}>
-                {{ semester.name }}
-            </option>
-            {% endfor %}
-        </select>
-    
-        <!-- チェックボックスのリスト -->
-        {% comment %} 教科名ごとに1回だけ表示するチェックリスト {% endcomment %}
+        <input type="hidden" name="semester_id" value="{{ selected_semester.id }}">
+
         {% for subject_class in subject_classes|dictsort:"subject.subject_name" %}
             {% ifchanged subject_class.subject.id %}
             <label>
                 <input type="checkbox"
-                       name="subject_ids"
-                       value="{{ subject_class.subject.id }}"
-                       class="subject-check"
-                       data-subject-id="{{ subject_class.subject.id }}">
+                    name="subject_ids"
+                    value="{{ subject_class.subject.id }}"
+                    class="subject-check"
+                    data-subject-id="{{ subject_class.subject.id }}">
                 {{ subject_class.subject.subject_name }}
             </label><br>
             {% endifchanged %}
         {% endfor %}
-    
         <button type="submit">登録</button>
     </form>
-    
+    {% else %}
+    <p>この学期の時間割はすでに登録済みです。</p>
+    {% endif %}
+
 
     <script>
         const subjectClasses = {};
