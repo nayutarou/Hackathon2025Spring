@@ -25,7 +25,6 @@
       </div>
     </form>
   </div>
-
   <table class="timetable">
     <thead>
       <tr>
@@ -43,15 +42,37 @@
       <tr class="timetable-row">
         <th class="lesson-header">{{ lesson }}</th>
         {% for day in weekdays %}
-        <td class="box flip timetable-cell" data-day="{{ day }}" data-lesson="{{ lesson }}">
-          <a href="#" class="square-button"></a>
-        </td>
+        <td class="box flip timetable-cell" data-day="{{ day }}" data-lesson="{{ lesson }}"></td>
         {% endfor %}
         <td class="empty-cell"></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+
+  <!-- Modal -->
+  <div id="popupModal" class="modal">
+    <div class="modal-content">
+      <form id="attendanceForm" method="POST" action="{% url 'attendances:attendance' %}">
+        {% csrf_token %}
+        <input type="hidden" name="subjectclass_id" id="form-subjectclass-id">
+        <input type="hidden" name="mytimetable_id" id="form-mytimetable-id">
+        <input type="hidden" name="lesson" id="form-lesson">
+        <input type="hidden" name="subject_name" id="form-subject-name">
+        <button type="submit" class="modal-btn-attendance">出席</button>
+      </form>
+      <form id="nonAttendanceForm" method="POST" action="{% url 'attendances:non_attendance' %}">
+        {% csrf_token %}
+        <input type="hidden" name="subjectclass_id" id="form-subjectclass-id-absence">
+        <input type="hidden" name="mytimetable_id" id="form-mytimetable-id-absence">
+        <input type="hidden" name="lesson" id="form-lesson-absence">
+        <input type="hidden" name="subject_name" id="form-subject-name-absence">
+        <button type="submit" class="modal-btn-absence">欠席</button>
+      </form>
+      <button id="cancelBtn">Cancel</button>
+    </div>
+  </div>
+
   <div class="link_all">
     <div>
       <a href="{% url 'attendances:credit_check' %}" class="link_a">単位確認ページへ</a>
@@ -79,103 +100,68 @@
         {% endfor %}
       </ul>
     </div>
-
   </section>
 </main>
 <script>
-
-
   document.addEventListener("DOMContentLoaded", function () {
     const data = JSON.parse(document.getElementById("timetable-data").textContent);
     const select = document.getElementById("semester-select");
-
     const dayMap = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5 };
 
     function renderTimetable(semesterId) {
-      // 一度全てのセルをクリア
-      console.log('呼び出し');
       document.querySelectorAll("#timetable-body td").forEach((td) => {
         td.innerHTML = '';
       });
 
-      // 該当の学期だけ抽出
       const filtered = data.filter((item) => item.semester_id == semesterId);
 
       filtered.forEach((item) => {
         item.schedules.forEach(([week, lesson]) => {
           const dayNum = dayMap[week];
-          const cell = document.querySelector(
-            `#timetable-body td[data-day="${dayNum}"][data-lesson="${lesson}"]`
-          );
+          const cell = document.querySelector(`#timetable-body td[data-day="${dayNum}"][data-lesson="${lesson}"]`);
           if (cell) {
-            const form = document.createElement("form");
-            form.method = "POST";
-            form.action = "/attendances/attendance/";
-
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-
-            if (csrfToken) {
-              const csrfInput = document.createElement("input");
-              csrfInput.type = "hidden";
-              csrfInput.name = "csrfmiddlewaretoken";
-              csrfInput.value = csrfToken;
-              form.appendChild(csrfInput);
-            }
-
-            // subjectclass_id
-            const subjectInput = document.createElement("input");
-            subjectInput.type = "hidden";
-            subjectInput.name = "subjectclass_id";
-            subjectInput.value = item.subjectclass_id;
-            form.appendChild(subjectInput);
-
-            // mytimetable_id
-            const timetableInput = document.createElement("input");
-            timetableInput.type = "hidden";
-            timetableInput.name = "mytimetable_id";
-            timetableInput.value = item.mytimetable_id;
-            form.appendChild(timetableInput);
-
-            // lesson（何限目）
-            const lessonInput = document.createElement("input");
-            lessonInput.type = "hidden";
-            lessonInput.name = "lesson";
-            lessonInput.value = lesson;
-            form.appendChild(lessonInput);
-
-            // subject_name（教科名）
-            const nameInput = document.createElement("input");
-            nameInput.type = "hidden";
-            nameInput.name = "subject_name";
-            nameInput.value = item.subject_name;
-            form.appendChild(nameInput);
-
-            // ボタン本体
             const button = document.createElement("button");
             button.className = "square-button";
             button.innerText = item.subject_name;
-
-            form.appendChild(button);
-            cell.appendChild(form);
+            button.dataset.subjectclassId = item.subjectclass_id;
+            button.dataset.mytimetableId = item.mytimetable_id;
+            button.dataset.lesson = lesson;
+            button.dataset.subjectName = item.subject_name;
+            button.addEventListener("click", (e) => {
+              e.preventDefault();
+              document.getElementById("popupModal").style.display = "block";
+              document.getElementById("form-subjectclass-id").value = item.subjectclass_id;
+              document.getElementById("form-mytimetable-id").value = item.mytimetable_id;
+              document.getElementById("form-lesson").value = lesson;
+              document.getElementById("form-subject-name").value = item.subject_name;
+              document.getElementById("form-subjectclass-id-absence").value = item.subjectclass_id;
+              document.getElementById("form-mytimetable-id-absence").value = item.mytimetable_id;
+              document.getElementById("form-lesson-absence").value = lesson;
+              document.getElementById("form-subject-name-absence").value = item.subject_name;
+            });
+            cell.appendChild(button);
           }
         });
       });
     }
 
-    // 初期表示（最初のセレクト値）
-    // 初期表示（select に値がある場合のみ実行）
     if (select.value) {
       renderTimetable(select.value);
-    } else {
-      console.warn("初期のセレクト値が空です。データが描画されません。");
     }
 
-
-    // セレクト変更時に再描画
     select.addEventListener("change", (e) => {
       renderTimetable(e.target.value);
     });
+
+    document.getElementById("cancelBtn").addEventListener("click", () => {
+      document.getElementById("popupModal").style.display = "none";
+    });
+
+    window.addEventListener("click", (e) => {
+      if (e.target.classList.contains("modal")) {
+        document.getElementById("popupModal").style.display = "none";
+      }
+    });
   });
 </script>
-
 {% endblock %}
