@@ -35,7 +35,9 @@
         </select>
     </form>
 
+    {% if is_registered %}
 
+    {% else %}
     <table>
         <tr>
             <th></th>
@@ -45,13 +47,14 @@
         </tr>
         {% for i in "12345" %}
         <tr>
-            <td>{{ i }}限</td>
+            <th>{{ i }}限</th>
             {% for day in weekdays %}
-            <td id="{{ day }}_{{ i }}"></td>
+            <th id="{{ day }}_{{ i }}"></th>
             {% endfor %}
         </tr>
         {% endfor %}
     </table>
+    {% endif %}
 
     {% if not is_registered %}
     <form method="POST" action="{% url 'attendances:mytimetable_regist' %}">

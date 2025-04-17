@@ -126,6 +126,15 @@ def mytimetable_regist(request):
         is_registered = MYTimetable.objects.filter(user=user, semester=selected_semester).exists()
 
         subject_classes = SubjectClass.objects.all()
+        
+        
+        # 登録済みなら、その時間割を取得してテンプレートに渡す
+        mytimetable_list = []
+        if is_registered:
+            mytimetable_list = MYTimetable.objects.filter(user=user, semester=selected_semester)
+
+        print(f"***check***:{is_registered}")
+        print(f"aaaaaaaa~{mytimetable_list}")
 
         return render(request, 'attendances/mytimetable.html', {
             'subject_classes': subject_classes,
@@ -133,6 +142,7 @@ def mytimetable_regist(request):
             'selected_semester': selected_semester,
             'weekdays': weekdays,
             'is_registered': is_registered,
+            'mytimetable_list': mytimetable_list,  # ←追加
         })
 
     
