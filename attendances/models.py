@@ -21,7 +21,7 @@ class Attendance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # 外部キーのuserid
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE) # 外部キーのsubject_id
     flag = models.BooleanField(default=False) # 出席欠席のフラグ(デフォルトは欠席)
-    created_at = models.DateField(auto_now_add=True) # 日付
+    created_at = models.DateField() # 日付
     timetable = models.ForeignKey(MYTimetable, on_delete=models.CASCADE) # 外部キーの時間割id
 
     def __str__(self):

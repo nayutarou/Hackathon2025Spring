@@ -1,96 +1,86 @@
 import os
 import json
 import datetime
+import logging
+import math
 
+from django.conf import settings
 from .models import Attendance,MYTimetable,Semester # DBのインポート
 from subjects.models import SubjectClass,Subject,Notice
-from django.shortcuts import render,redirect,get_object_or_404 # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
+from django.shortcuts import render,redirect,get_object_or_404,reverse # Djangoのショートカット関数をインポート（renderはテンプレートの表示、redirectはリダイレクト）
 from django.contrib.auth.decorators import login_required # ログインしてないユーザを制限する
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse,Http404
+from django.http import JsonResponse,Http404,HttpResponse
 from django.db import IntegrityError
 from django.core.exceptions import SuspiciousOperation
 from django.contrib import messages  # フラッシュメッセージ用
+from django.views.decorators.csrf import csrf_protect  # CSRF守る
+from django.views.decorators.http import require_POST
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
+from django.db.models import *
+from django.core.serializers.json import DjangoJSONEncoder
+from datetime import datetime
+import pytz
 
-
-# 出欠確認 Attendanceモデルに登録
-@csrf_exempt
-@login_required # ログインしている時にできる
-def attendance(request):
-    try:
-        # HTMLからリクエストが送られたかどうか(出欠のボタンが押されたかの確認)
-        if request.method != 'POST':
-            return JsonResponse({"error": "POST method required"}, status=405)
-        
-
-        # HTMLから受け取るもの
-        # mytableidの取得
+# 登録画面の遷移
+@login_required
+def attendance_page(request):
+    if request.method == 'POST':
+        subjectclass_id = request.POST.get('subjectclass_id')
         mytimetable_id = request.POST.get('mytimetable_id')
-        # 出欠のflag <- 出欠のフラグ(押されたボタン)
-        flag = request.POST.get('flag')
-        # 今のコマ
         lesson = request.POST.get('lesson')
-
-        # 必須項目のバリデーション
-        # mytimetable_idまたはlessonが取得できないときにエラーページを出す
-        if not mytimetable_id or not lesson:
-            return JsonResponse({"error": "mytimetable_idとlessonが取得できませんでした"}, status=400)
-
-        # mytimetable_idからMYTimetableに該当する1つのデータを取得
-        mytimetable = get_object_or_404(MYTimetable,id=mytimetable_id)
-        # mytimetableに格納されているsubjectclass(id)に格納されているsubject(id)を取得
-        subject_id = mytimetable.subjectclass.subject
+        subject_name = request.POST.get('subject_name')
+   
+        # 処理を書く
+        print(subjectclass_id, mytimetable_id)
         
-        # 今ログインしてるユーザを取得
+        context = {
+            'subject_id': subjectclass_id,
+            'mytimetable_id': mytimetable_id,
+            'lesson': lesson,
+            'subject_name': subject_name,
+        }
+        return render(request, 'attendances/attendance.html', context)
+
+# 登録ボタンでDB登録
+@login_required
+def attendance(request):
+    if request.method == 'POST':
         user = request.user
+        # 日本のタイムゾーン
+        jst = pytz.timezone('Asia/Tokyo')
 
-        # 今日の曜日
-        week = datetime.date.today().weekday() # 月 = 0 火 = 1
+        # JSTでの現在の日付を取得
+        date = datetime.now(jst).date()
 
-        # 今日の日付
-        date = datetime.date.today()
+        print(date)
 
-        # 他のDBから取得する
-        # 時間割id = 今日の曜日から時間割に登録されている今日の押された教科から曜日とコマ数を取得
-        # その教科の曜日に合うのを探す、コマもMYTimetableから
-        # get_object_or_404(DB名,カラム名 = 調べたいもの ) データベースからオブジェクトを取得する際に使用
-        timetables = get_object_or_404(MYTimetable,week = week,lesson = lesson)
-        timetable = timetables.id
+        subject_id = request.POST.get('subject')
+        lesson = request.POST.get('lesson')
+        week = request.POST.get('week')
+        mytimetable_id = request.POST.get('mytimetable_id')
+
+        # 出席情報を登録
+        flag = 1 if f'attendance_{subject_id}' in request.POST else 0
+        
+        # Subjectオブジェクトを取得
+        subject = get_object_or_404(Subject, id=subject_id)
+
+        # MYTimetableオブジェクトを取得
+        mytimetable = get_object_or_404(MYTimetable, id=mytimetable_id)
 
         Attendance.objects.create(
-                user=user,
-                sbject=subject_id,
-                flag=flag,
-                created_at=date,
-                timetable=timetable
-            )
+            user=user,
+            subject=subject,
+            flag=flag,
+            created_at=date,
+            timetable=mytimetable
+        )
 
-        # 出欠確認後のリダイレクト先
-        return redirect('')
+        return redirect('attendances:index')
 
-    # JSONのフォーマットが壊れている場合
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON format"}, status=400)
-
-    # get_object_or_404() を使ってデータを取得しようとして、該当するデータがデータベースに存在しなかった
-    except Http404:
-        return JsonResponse({"error": "Timetable not found for today’s subject and lesson."}, status=404)
-
-    # DBに保存するときに、ユニーク制約違反とか、外部キーが壊れてるなどのDB整合性エラーが起きた場合
-    except IntegrityError:
-        return JsonResponse({"error": "Database error: possibly duplicate or invalid data."}, status=409)
-
-    # データの型や値が期待していた形式と違ったとき。
-    except (ValueError, TypeError):
-        return JsonResponse({"error": "Invalid data type or value."}, status=422)
-
-    # Djangoが「セキュリティ的にヤバいリクエストだな」と判断したときに投げられる例外
-    except SuspiciousOperation:
-        return JsonResponse({"error": "Suspicious operation detected."}, status=400)
-
-    # 上記に当てはまらない 全ての予期しないエラー
-    except Exception as e:
-        return JsonResponse({"error": f"Unexpected error: {str(e)}"}, status=500)
+    return JsonResponse({"error": "POSTメソッドで送ってください"}, status=405)
 
 """
     user = models.ForeignKey(User, on_delete=models.CASCADE) # 外部キーのuserid
@@ -102,48 +92,62 @@ def attendance(request):
 
 # MY時間割 時間割モデルに登録
 @login_required
-# requestの他にURLからsmester_nameを受け取る
-def mytimetable_regist(request,semester_name):
-    if request.method == 'POST':
-        # チェックボックスからsubject_idからリストの取得とsemesterの取得
-        subject_ids = request.POST.getlist('subject_ids')
+def mytimetable_regist(request):
+    semesters = Semester.objects.all()
+    user = request.user
+    weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri"]
 
-        # 科目が何も選ばれていなかったときの警告処理
+    if request.method == 'POST':
+        subject_ids = request.POST.getlist('subject_ids')
+        semester_id = request.POST.get('semester_id')
+
         if not subject_ids:
             messages.warning(request, "科目が選択されていません。")
-            return redirect('mytimetable_regist', semester_name=semester_name)
+            return redirect(f"{reverse('attendances:mytimetable_regist')}?semester_id={semester_id}")
 
-        # URLから学期を取得（見つからなければ404）
-        semester = get_object_or_404(Semester, name=semester_name)
-
-        # 一括取得（subject外部キーを元に関連SubjectClassを取得）
+        semester = get_object_or_404(Semester, id=semester_id)
         subject_objects = SubjectClass.objects.filter(subject__in=subject_ids)
-
-        # ログインしているユーザを取得
-        user = request.user  
-
-        # リストに格納する（各SubjectClassとSemesterでMYTimetableインスタンス作成）
         timetable_list = [
             MYTimetable(user=user, subjectclass=subject_class, semester=semester)
-            # 一つずつ取り出す
             for subject_class in subject_objects
         ]
 
         try:
-            # DBに一括登録（例外処理で重複などに備える）
             MYTimetable.objects.bulk_create(timetable_list)
             messages.success(request, "時間割が正常に登録されました。")
         except IntegrityError:
             messages.error(request, "登録中にエラーが発生しました。既に登録されている可能性があります。")
 
-        return redirect('mytimetable')  # 完了後のリダイレクト先（URL nameは適宜修正）
+        return redirect('attendances:index')
 
-    # GETメソッド時の処理：全てのSubjectClassを取得して表示（必要に応じて絞り込み）
-    subject_classes = SubjectClass.objects.all()
-    return render(request, 'mytimetable.html', {
-        'subject_classes': subject_classes,
-        'semester_name': semester_name,
-    })
+    else:
+        # GET処理（選択された学期IDがURLに含まれていればそれを使う）
+        semester_id = request.GET.get('semester_id')
+        selected_semester = get_object_or_404(Semester, id=semester_id) if semester_id else Semester.objects.first()
+
+        # 選択された学期に対して、すでに登録されているか判定
+        is_registered = MYTimetable.objects.filter(user=user, semester=selected_semester).exists()
+
+        subject_classes = SubjectClass.objects.all()
+        
+        
+        # 登録済みなら、その時間割を取得してテンプレートに渡す
+        mytimetable_list = []
+        if is_registered:
+            mytimetable_list = MYTimetable.objects.filter(user=user, semester=selected_semester)
+
+        print(f"***check***:{is_registered}")
+        print(f"aaaaaaaa~{mytimetable_list}")
+
+        return render(request, 'attendances/mytimetable.html', {
+            'subject_classes': subject_classes,
+            'semesters': semesters,
+            'selected_semester': selected_semester,
+            'weekdays': weekdays,
+            'is_registered': is_registered,
+            'mytimetable_list': mytimetable_list,  # ←追加
+        })
+
     
 """
     user = models.ForeignKey(User, on_delete=models.CASCADE) # 外部キーのuser_id
@@ -154,25 +158,37 @@ def mytimetable_regist(request,semester_name):
 
 # 自分の時間割表示
 @login_required
-def topframe(request, semester_name):
-    # ログインしているユーザー
+def topframe(request):
     user = request.user
+    mytimetable_list = MYTimetable.objects.filter(user=user).select_related('subjectclass', 'semester')
+    semester_ids = mytimetable_list.values_list('semester_id', flat=True).distinct()
+    my_semesters = Semester.objects.filter(id__in=semester_ids).values('id', 'name')
 
-    # 学期名に対応する Semester オブジェクトを取得
-    semester = get_object_or_404(Semester, name=semester_name)
+    week_map = {'1': 'Mon', '2': 'Tue', '3': 'Wed', '4': 'Thu', '5': 'Fri'}
 
-    # 自分の時間割を取得
-    mytimetable_list = MYTimetable.objects.filter(user=user, semester=semester)
+    timetable_data = []
+    for timetable in mytimetable_list:
+        subjectclass = timetable.subjectclass
+        weeks = subjectclass.week if isinstance(subjectclass.week, list) else [subjectclass.week]
+        lessons = subjectclass.lesson if isinstance(subjectclass.lesson, list) else [subjectclass.lesson]
+        weeks = [week_map.get(str(w), str(w)) for w in weeks]
+        schedule_list = list(zip(weeks, lessons))
 
-    # 通知を表示
-    notice_list = Notice.objects.filter(user=user).order_by('-created_at')
+        timetable_data.append({
+            'semester_id': timetable.semester.id,
+            'subjectclass_id': subjectclass.id,
+            'subject_name': subjectclass.subject.subject_name,
+            'schedules': schedule_list,
+            'mytimetable_id': timetable.id,
+        })
 
-    # テンプレートに渡して描画
-    return render(request, 'timetable/mytimetable.html', {
-        'mytimetable_list': mytimetable_list,
-        'semester': semester,
-        'notice':notice_list
-    })
+    context = {
+    'timetable_data_json': json.dumps(timetable_data, cls=DjangoJSONEncoder),
+    'semesters': list(my_semesters),
+    'weekdays': [1, 2, 3, 4, 5],  # 月〜金
+    'periods': range(1, 5),       # 1限〜4限（必要なら調整）
+}
+    return render(request, 'attendances/index.html', context)
     
 """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -286,7 +302,7 @@ def credit_check(request):
     return render(request, 'attendance_summary.html', {'summary': summary})
 
 #欠席一覧
- def non_attendance_list(request):
+def non_attendance_list(request):
     try:
         attendances = Attendance.objects.filter(flag=True).select_related('subject').values('subject__subject_name', 'created_at')
         return render(request, 'attendance_summary.html', {'attendances': attendances})

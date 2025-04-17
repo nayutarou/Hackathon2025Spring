@@ -1,0 +1,187 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時間割</title>
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/attendance/mytimetable.css' %}">
+</head>
+
+<body>
+    <header class="footer">
+        <span class="site-title">Unitrex</span>
+        <input type="checkbox" id="overlay-input" />
+        <label for="overlay-input" id="overlay-button" class="menu-button">
+            <span class="menu-label">menu</span>
+            <span class="hamburger-icon"></span>
+        </label>
+    </header>
+
+    <!-- GETリクエストで学期変更を即反映 -->
+    <!-- 学期選択フォーム（GETリクエストで学期IDを渡す） -->
+    <form method="GET" action="{% url 'attendances:mytimetable_regist' %}">
+        <label for="semester">学期を選択：</label>
+        <select name="semester_id" id="semester" onchange="this.form.submit()">
+            {% for semester in semesters %}
+                <option value="{{ semester.id }}" {% if semester.id == selected_semester.id %}selected{% endif %}>
+                    {{ semester.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if is_registered %}
+
+    {% else %}
+    <table>
+        <tr>
+            <th></th>
+            {% for day in weekdays %}
+            <th>{{ day }}</th>
+            {% endfor %}
+        </tr>
+        {% for i in "12345" %}
+        <tr>
+            <th>{{ i }}限</th>
+            {% for day in weekdays %}
+            <th id="{{ day }}_{{ i }}"></th>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    {% if not is_registered %}
+    <form method="POST" action="{% url 'attendances:mytimetable_regist' %}">
+        {% csrf_token %}
+        <input type="hidden" name="semester_id" value="{{ selected_semester.id }}">
+
+        {% for subject_class in subject_classes|dictsort:"subject.subject_name" %}
+            {% ifchanged subject_class.subject.id %}
+            <label>
+                <input type="checkbox"
+                    name="subject_ids"
+                    value="{{ subject_class.subject.id }}"
+                    class="subject-check"
+                    data-subject-id="{{ subject_class.subject.id }}">
+                {{ subject_class.subject.subject_name }}
+            </label><br>
+            {% endifchanged %}
+        {% endfor %}
+        <button type="submit">登録</button>
+    </form>
+    {% else %}
+    <p>この学期の時間割はすでに登録済みです。</p>
+    {% endif %}
+
+
+    <script>
+        const subjectClasses = {};
+        
+        // DjangoテンプレートからSubjectClassデータを整形
+        {% for subject_class in subject_classes %}
+            {% if subject_class.week and subject_class.lesson %}
+                const subjectId_{{ forloop.counter }} = "{{ subject_class.subject.id }}";
+                if (!subjectClasses[subjectId_{{ forloop.counter }}]) {
+                    subjectClasses[subjectId_{{ forloop.counter }}] = [];
+                }
+                subjectClasses[subjectId_{{ forloop.counter }}].push({
+                    week: "{{ subject_class.week }}",         // 曜日（例：Mon）
+                    lesson: "{{ subject_class.lesson }}",     // コマ数（例：1）
+                    name: "{{ subject_class.subject.subject_name }}" // 教科名
+                });
+            {% endif %}
+        {% endfor %}
+        
+        // 重複チェックして、登録ボタンを無効化・重複したコマに色付け
+        function checkForOverlaps() {
+            const checkedSubjectIds = Array.from(document.querySelectorAll('.subject-check:checked'))
+                .map(cb => cb.dataset.subjectId);
+        
+            const seenSlots = new Set(); // 一度表示したスロット（例：Mon_1）
+            let hasOverlap = false;
+        
+            // すべてのセルから重複スタイルを削除
+            document.querySelectorAll('td').forEach(td => {
+                td.classList.remove('overlap');
+                td.innerHTML = ''; // セルの内容をクリア
+            });
+        
+            // チェックされた教科の時間割スロットを確認
+            checkedSubjectIds.forEach(subjectId => {
+                const relatedClasses = subjectClasses[subjectId] || [];
+        
+                relatedClasses.forEach(sc => {
+                    const slot = `${sc.week}_${sc.lesson}`;
+                    const cell = document.getElementById(slot);
+        
+                    if (seenSlots.has(slot)) {
+                        hasOverlap = true;
+                        if (cell) {
+                            cell.classList.add('overlap'); // 色を付ける
+                            // 教科名を重複して追加（改行で積み重ねる）
+                            cell.innerHTML += `<br>${sc.name}`;
+                        }
+                    } else {
+                        seenSlots.add(slot);
+                        const cell = document.getElementById(slot);
+                        if (cell) {
+                            cell.innerHTML = sc.name; // 初めて表示する場合
+                        }
+                    }
+                });
+            });
+        
+            // 登録ボタンを有効／無効に
+            const submitBtn = document.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = hasOverlap;
+            }
+        }
+        
+        // チェックボックスイベント処理
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.subject-check').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const subjectId = e.target.dataset.subjectId;
+                    const relatedClasses = subjectClasses[subjectId] || [];
+        
+                    // 時間割に教科名を出す or 消す
+                    relatedClasses.forEach(sc => {
+                        const cellId = `${sc.week}_${sc.lesson}`;
+                        const cell = document.getElementById(cellId);
+        
+                        if (cell) {
+                            if (e.target.checked) {
+                                // チェックされたときに教科名を追加
+                                const originalContent = cell.innerHTML;
+                                cell.innerHTML = originalContent + (originalContent ? '<br>' : '') + sc.name;
+                            } else {
+                                // チェック外されたときに教科名を削除
+                                const originalContent = cell.innerHTML;
+                                const updatedContent = originalContent.replace(sc.name + '<br>', '');
+                                cell.innerHTML = updatedContent;
+                            }
+                        }
+                    });
+        
+                    // 重複チェックを実行
+                    checkForOverlaps();
+                });
+            });
+        
+            // 初期化チェック（リロード時など）
+            checkForOverlaps();
+        });
+        
+        console.log(subjectClasses);
+        </script>
+        
+</body>
+
+</html>
