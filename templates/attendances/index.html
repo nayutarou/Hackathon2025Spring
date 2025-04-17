@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>時間割</title>
   <link rel="stylesheet" href="{% static 'css/reset.css' %}">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/attendances/style.css' %}">
 </head>
 
 <body>
@@ -30,7 +30,7 @@
         <label for="semester-select">学期選択:</label>
         <select name="semester" id="semester-select">
           {% for sem in semesters %}
-          <option value="{{ sem.id }}">{{ sem.name }}</option>
+          <option value="{{ sem.id }}" {% if sem.id == selected_semester_id %}selected{% endif %}>{{ sem.name }}</option>
           {% endfor %}
         </select>
       </form>
@@ -50,12 +50,14 @@
       </thead>
       <tbody id="timetable-body">
         {% for lesson in periods %}
-        <tr>
-          <th>{{ lesson }}</th>
+        <tr class="timetable-row">
+          <th class="lesson-header">{{ lesson }}</th>
           {% for day in weekdays %}
-          <td data-day="{{ day }}" data-lesson="{{ lesson }}"></td>
+          <td class="box flip timetable-cell" data-day="{{ day }}" data-lesson="{{ lesson }}">
+            <a href="#" class="square-button"></a>
+          </td>
           {% endfor %}
-          <td></td>
+          <td class="empty-cell"></td>
         </tr>
         {% endfor %}
       </tbody>
@@ -98,23 +100,7 @@
     </section> {% endcomment %}
   </main>
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // 科目名を格納するセット
-      const seenSubjects = new Set();
-
-      // すべてのボタンを取得
-      const buttons = document.querySelectorAll('.square-button');
-
-      // 各ボタンをループ
-      buttons.forEach(function (button, index) {
-        const subjectName = button.getAttribute('data-subject-name');
-
-        // 偶数番目の科目を非表示にする（インデックスが0, 2, 4, ... の場合）
-        if (index % 2 === 0) {
-          button.closest('form').style.display = 'none';  // 偶数番目のフォームを非表示にする
-        }
-      });
-    });
+    
 
     document.addEventListener("DOMContentLoaded", function () {
       const data = JSON.parse(document.getElementById("timetable-data").textContent);
@@ -194,7 +180,13 @@
       }
 
       // 初期表示（最初のセレクト値）
-      renderTimetable(select.value);
+      // 初期表示（select に値がある場合のみ実行）
+      if (select.value) {
+        renderTimetable(select.value);
+      } else {
+        console.warn("初期のセレクト値が空です。データが描画されません。");
+      }
+
 
       // セレクト変更時に再描画
       select.addEventListener("change", (e) => {
