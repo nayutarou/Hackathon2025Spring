@@ -73,7 +73,7 @@ def subject_register(request):
                 )
             SubjectClass.objects.bulk_create(subject_classes)
 
-            return redirect('subjects:syllabus')
+            return redirect('attendances:index')
 
         except Exception as e:
             return HttpResponse(f"エラーが発生しました: {str(e)}", status=500)
