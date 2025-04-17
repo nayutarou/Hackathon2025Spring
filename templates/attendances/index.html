@@ -15,12 +15,14 @@
   <div class="gnavi__wrap">
     <form>
       {% csrf_token %}
+      <div class="semester-select-safe">
       <label for="semester-select">学期選択:</label>
       <select name="semester" id="semester-select">
         {% for sem in semesters %}
         <option value="{{ sem.id }}">{{ sem.name }}</option>
         {% endfor %}
       </select>
+    </div>
     </form>
   </div>
 

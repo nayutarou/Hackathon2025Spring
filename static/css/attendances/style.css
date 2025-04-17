@@ -13,7 +13,13 @@ table {
 tr th:last-child {
     width: 4%;
 }
+thead th{
+    height: 30px;
+}
 
+.lesson-header{
+    width: 20px;
+}
 th,
 td {
     border: solid 1px #C8C8C8;
@@ -27,7 +33,12 @@ td {
 tr.dayofweek th {
     height: 6vh;
 }
-
+.semester-select-safe{
+    width: 25%;
+    margin: 0 auto;
+    margin-top: -4px;
+    margin-bottom: 10px;
+}
 /* square-buttonクラスのスタイル */
 .square-button {
     display: flex;
