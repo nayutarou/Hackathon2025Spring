@@ -16,24 +16,17 @@ from django.http import HttpResponse
 
 @csrf_exempt
 @login_required # ログインしている時にできる
-# @require_POST # POSTじゃなければ405返す
-def syllabus(request):
+def syllabus(request, subject_id):
     try:
-        # HTMLからリクエストが送られたかどうか(出欠のボタンが押されたかの確認)
-        if request.method != 'POST':
-            return JsonResponse({"error": "POST method required"}, status=405)
-        
-        # htmlから受け取る
-        subject_id = request.POST.get('subject_id')
-        if not subject_id:
-            return JsonResponse({"error": "subject_idが取得できませんでした"}, status=400)
+        # subject_id を使って Subject モデルから取得
+        subject = get_object_or_404(Subject, pk=subject_id)
 
-        subject = get_object_or_404(Subject, subject=subject_id)
-        subjectclass = SubjectClass.objects.filter(subject=subject)
-
+        # 該当する Subject に紐づく SubjectClass を取得
+        subject_classes = Subject.objects.filter(id=subject_id)
+        print(subject)
         return render(request, 'subjects/syllabus.html', {
             'subject': subject,
-            'subjectclass': subjectclass,
+            'subjectclass': subject_classes,
         })
 
     except Exception as e:
@@ -103,3 +96,7 @@ def show_subject_form(request):
     
     return HttpResponse(status=405)  # POST以外は許可しない
 
+@login_required
+def subject_list(request):
+    subjects = Subject.objects.all()
+    return render(request, 'list/list.html', {'subjects': subjects})
