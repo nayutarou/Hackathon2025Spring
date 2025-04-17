@@ -4,6 +4,7 @@ td {
   width: 15vw;
   height: auto;
 }
+
 form {
   width: 100%;
   height: 100%;
@@ -14,6 +15,13 @@ form {
 button {
   height: 100%;
   border: none;
+}
+
+.link a{
+  text-decoration: none;
+  font-size: 10px;
+  display: block;
+  color: #23A852;
 }
 
 table {
@@ -45,6 +53,8 @@ td {
   margin: 0;
   font-weight: 100;
 }
+
+
 
 tr.dayofweek th {
   height: 6vh;
