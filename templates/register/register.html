@@ -1,39 +1,39 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="description" content="登録ページ" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{% static 'css/register/register.css' %}" />
-    <title>登録フォーム</title>
-  </head>
-  <body>
-    <div class="flex align-center justify-center">
-      <div class="flex align-center">
-        <img src="{% static 'image/image.png' %}" alt="アイコン" />
-        <h1 class="center">Unitrex</h1>
-      </div>
-    </div>
-    <form method="post" action="{% url 'accounts:signup' %}">
-      {% csrf_token %}
-      <div class="form-center">
-        {{ form.non_field_errors }}
+<meta name="description" content="登録ページ" />
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/register/register.css' %}" />
+{% endblock %}
 
-        {% for field in form %}
-          {% for error in field.errors %}
+{% block title %}
+  登録フォーム
+{% endblock %}
+
+{% block content %}
+  <div class="flex align-center justify-center">
+    <div class="flex align-center">
+      <img src="{% static 'image/image.png' %}" alt="アイコン" />
+      <h1 class="center">Unitrex</h1>
+    </div>
+  </div>
+  <form method="post" action="{% url 'accounts:signup' %}">
+    {% csrf_token %}
+    <div class="form-center">
+      {{ form.non_field_errors }}
+
+      {% for field in form %}
+        {% for error in field.errors %}
           <small class="align-center">{{ error }}</small>
-          {% endfor %}
-          <div class="border-bottom">{{ field.label_tag }}
-            {{ field }}</div>
         {% endfor %}
-      </div>
-      <div class="register-input">
-        <input type="submit" value="新規登録" />
-      </div>
-    </form>
-    <p class="bule">
-      <a href="{% url 'accounts:login' %}">ログイン画面へ</a>
-    </p>
-  </body>
-</html>
+        <div class="border-bottom">{{ field.label_tag }}
+          {{ field }}</div>
+      {% endfor %}
+    </div>
+    <div class="register-input">
+      <input type="submit" value="新規登録" />
+    </div>
+  </form>
+  <p class="bule">
+    <a href="{% url 'accounts:login' %}">ログイン画面へ</a>
+  </p>
+{% endblock %}

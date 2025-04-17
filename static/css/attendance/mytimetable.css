@@ -1,5 +1,6 @@
 .overlap {
-    background-color: #f99; /* 薄い赤 */
+    background-color: #f99;
+    /* 薄い赤 */
     color: white;
     font-weight: bold;
 }
@@ -24,23 +25,98 @@ td {
     font-weight: 100;
 }
 
-.w-19{
+.w-19 {
     width: 19vw;
 }
 
-.b-1{
-    border: 1px solid black;
+.b-1 {
+    /* border: 1px solid black; */
 }
 
-.mt-5{
+.mt-5 {
     margin: 5px auto auto auto;
 }
 
-.mt-40{
+.mx-40 {
     margin-top: 40px;
+    margin-bottom: 20px;
 }
 
-.w-80{
+.w-80 {
     width: 80vw;
 }
 
+.bg-mist {
+    background-color: #f6f6f6;
+}
+
+.flex {
+    display: flex;
+}
+
+.justify-evenly {
+    justify-content: space-between;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.subject-option {
+    width: 80%;
+    margin-top: 1rem;
+    background-color: #f8f8f8;
+    /* 通常背景 */
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+/* チェックボックス自体は非表示 */
+.round-checkbox {
+    display: none;
+}
+
+.check-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* 選択されたとき */
+.round-checkbox:checked+.custom-label {
+    background-color: #7C5FF0;
+    /* 選択時の背景 */
+    color: white;
+}
+
+.round-checkbox:checked+.custom-label .check-icon {
+    content: url("/static/image/checked.png");
+    /* 画像２（チェック付き） */
+}
+
+/* 通常時の画像 */
+.check-icon {
+    content: url("/static/image/check.png");
+    /* 画像１（丸） */
+}
+
+.btn_div{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.regist_btn{
+    width: 80px;
+    height: 40px;
+    background-color: white;
+    border: 1px solid #B3EBC6;
+    border-radius: 20px;
+    color: #B3EBC6;
+    box-shadow: 1px 1px 1px 1px gainsboro ;
+}

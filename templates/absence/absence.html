@@ -1,19 +1,19 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ja">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>欠席送信</title>
-  <link rel="stylesheet" href="{% static 'css/absence/absence.css' %}">
-</head>
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/absence/absence.css' %}" />
+{% endblock %}
 
-<body>
+{% block title %}
+  欠席送信
+{% endblock %}
+
+{% block content %}
   <form method="POST" action="{% url 'attendances:non_attendance_regist' %}">
     {% csrf_token %}
-    <input type="hidden" name="timetable_id" value="{{ mytimetable_id }}">
-    <input type="hidden" name="subject_id" value="{{ subject_id }}">
+    <input type="hidden" name="timetable_id" value="{{ mytimetable_id }}" />
+    <input type="hidden" name="subject_id" value="{{ subject_id }}" />
 
     <div class="switch">
       <div class="toggle-button">
@@ -60,15 +60,13 @@
       <select name="teacher" id="teacher-name">
         <option value="">---</option>
         {% for slack in slack_members %}
-        <option value="{{ slack.member }}">{{ slack.name }}</option>
+          <option value="{{ slack.member }}">{{ slack.name }}</option>
         {% endfor %}
       </select>
 
       <textarea cols="30" rows="5" name="message"></textarea>
     </div>
 
-    <input type="submit" id="send-btn" value="送信する">
+    <input type="submit" id="send-btn" value="送信する" />
   </form>
-</body>
-
-</html>
+{% endblock %}
