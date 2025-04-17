@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ja'
 
 TIME_ZONE = 'UTC'
 
@@ -141,3 +141,8 @@ AUTHENTICATION_BACKENDS = [
 # メディアファイル（画像など）を保存する場所
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'  # media フォルダを指定
+
+LOGOUT_REDIRECT_URL = '/login/'  # または reverse_lazy('login')
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'admin@example.com'

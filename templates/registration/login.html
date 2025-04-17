@@ -11,28 +11,29 @@
 </head>
 
 <body>
-  <div class="flex">
-    <div id="image-div">
-      <img src="../../static/image/image.png" alt="アイコン">
-    </div>
-
-    <h1 class="center">Unitrex</h1>
+  <div class="flex align-center justify-center">
+      <div class="flex align-center">
+        <img src="{% static 'image/image.png' %}" alt="アイコン">
+        <h1 class="center">Unitrex</h1>
+      </div>
   </div>
 
   <form method="post">
     {% csrf_token %}
-    {% if error %}
-    <p style="color: red;">{{ error }}</p>
-    {% endif %}
+    <div class="form-center">
 
-    <div class="border-bottom">
-      <label for="email">メールアドレス</label>
-      <input type="email" name="email" id="email" class="form-control" required />
-    </div>
+      <div class="border-bottom">
+        <label for="email">メールアドレス</label>
+        <input type="email" name="email" id="email" class="form-control" required />
+      </div>
 
-    <div class="border-bottom">
-      <label for="password">パスワード</label>
-      <input type="password" name="password" id="password" class="form-control" required />
+      <div class="border-bottom">
+        <label for="password">パスワード</label>
+        <input type="password" name="password" id="password" class="form-control" required />
+      </div>
+      {% if error %}
+      <small style="color: red;">{{ error }}</small>
+      {% endif %}
     </div>
 
     <div class="login-input">
@@ -42,6 +43,9 @@
 
   <p class="bule">
     <a href="{% url 'accounts:signup' %}">アカウントをお持ちでない方はこちら</a>
+  </p>
+  <p class="bule">
+    <a href="{% url 'password_reset' %}">パスワードをお忘れですか？</a>
   </p>
   {% comment %} <p class="bule">
     <a href="{% url 'accounts:password_reset' %}">パスワードを忘れた方はこちら</a>

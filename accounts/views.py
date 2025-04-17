@@ -21,29 +21,58 @@ class SignUpView(generic.CreateView):
     success_url = reverse_lazy('accounts:login')     # サインアップ成功時、ログインページのURLにリダイレクト
     # 登録するときのhtml
     template_name = 'register/register.html'
-    
+
 def login_view(request):
+    error = None  # 初期状態はエラーなし
+
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        try:
-            # email から username を取得
-            user = User.objects.get(email=email)
-            username = user.username
+        if not email or not password:
+            error = 'メールアドレスとパスワードの両方を入力してください。'
+        else:
+            try:
+                # email から username を取得
+                user = User.objects.get(email=email)
+                username = user.username
 
-            # 認証処理（usernameで行う）
-            user = authenticate(request, username=username, password=password)
+                # 認証処理
+                user = authenticate(request, username=username, password=password)
 
-            if user is not None:
-                login(request, user)
-                # 成功時の遷移先
-                return redirect('subjects/syllabus.html')
-            else:
+                if user is not None:
+                    login(request, user)
+                    return redirect('attendances:index')  # ログイン成功時の遷移先
+                else:
+                    error = 'メールアドレスまたはパスワードが間違っています。'
+            except User.DoesNotExist:
                 error = 'メールアドレスまたはパスワードが間違っています。'
-        except User.DoesNotExist:
-            error = 'メールアドレスまたはパスワードが間違っています。'
-        
-        return render(request, 'login/login.html', {'error': error})
+
+    # GET またはエラーがある場合
+    return render(request, 'registration/login.html', {'error': error})
     
-    return render(request, 'registration/login.html')
+# def login_view(request):
+#     if request.method == 'POST':
+#         email = request.POST.get('email')
+#         password = request.POST.get('password')
+
+#         try:
+#             # email から username を取得
+#             user = User.objects.get(email=email)
+#             username = user.username
+
+#             # 認証処理（usernameで行う）
+#             user = authenticate(request, username=username, password=password)
+
+#             if user is not None:
+#                 login(request, user)
+#                 # 成功時の遷移先
+#                 return redirect('attendances:index')
+#             else:
+#                 error = 'メールアドレスまたはパスワードが間違っています。'
+#         except User.DoesNotExist:
+#             error = 'メールアドレスまたはパスワードが間違っています。'
+        
+#         return render(request, 'login/login.html', {'error': error})
+    
+#     return render(request, 'registration/login.html')

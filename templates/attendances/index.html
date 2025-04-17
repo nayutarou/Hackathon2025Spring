@@ -1,200 +1,186 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ja">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>時間割</title>
-  <link rel="stylesheet" href="{% static 'css/reset.css' %}">
-  <link rel="stylesheet" href="{% static 'css/attendances/style.css' %}">
-</head>
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/attendances/style.css' %}">
+{% endblock  %}
 
-<body>
-  <header class="footer">
-    <span class="site-title">Unitrex</span>
-    <input type="checkbox" id="overlay-input" />
-    <label for="overlay-input" id="overlay-button" class="menu-button">
-      <span class="menu-label">menu</span>
-      <span class="hamburger-icon"></span>
-    </label>
-  </header>
+{% block title %}時間割{% endblock  %}
 
-  <main>
-    <script id="timetable-data" type="application/json">
-        {{ timetable_data_json|safe }}
-    </script>
-    <div class="gnavi__wrap">
-      <form>
-        {% csrf_token %}
-        <label for="semester-select">学期選択:</label>
-        <select name="semester" id="semester-select">
-          {% for sem in semesters %}
-          <option value="{{ sem.id }}" {% if sem.id == selected_semester_id %}selected{% endif %}>{{ sem.name }}</option>
-          {% endfor %}
-        </select>
-      </form>
-    </div>
-
-    <table class="timetable">
-      <thead>
-        <tr>
-          <th></th>
-          <th>月</th>
-          <th>火</th>
-          <th>水</th>
-          <th>木</th>
-          <th>金</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="timetable-body">
-        {% for lesson in periods %}
-        <tr class="timetable-row">
-          <th class="lesson-header">{{ lesson }}</th>
-          {% for day in weekdays %}
-          <td class="box flip timetable-cell" data-day="{{ day }}" data-lesson="{{ lesson }}">
-            <a href="#" class="square-button"></a>
-          </td>
-          {% endfor %}
-          <td class="empty-cell"></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <div class="link_all">
-      {% comment %} <a href="{% url 'registration' %}" class="link_a">単位確認ページへ</a> {% endcomment %}
-      {% comment %} <a href="{% url 'registration' %}">
-        <img src="{% static 'img/Group 453.png' %}" class="img_a" alt="単位確認">
-      </a> {% endcomment %}
-    </div>
-    {% comment %}
-    <section class="notice">
-      <div class="text-with-lines">
-        <div class="text-contents">
-          <div class="text-english">notice</div>
-          <div class="text-japanese">お知らせ</div>
-        </div>
-      </div>
-      <div class="notice-stand">
-        <ul class="news-list">
-          {% for notice in notice %}
-          <li class="item">
-            <a href="#">
-              <div class="tabulabel {% if notice.is_urgent %}first{% else %}second{% endif %}">
-                {% if notice.is_urgent %}緊急{% else %}通常{% endif %}
-              </div>
-              <p class="title">{{ notice.title }}</p>
-            </a>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="notice-footer">
-        <a href="{% url 'all_notices' %}" class="view-all">VIEW ALL</a>
-        <a href="{% url 'registration' %}">
-          <img src="{% static 'img/Arrow 2.png' %}" class="arrows" alt="矢印">
-        </a>
-      </div>
-    </section> {% endcomment %}
-  </main>
-  <script>
-    
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const data = JSON.parse(document.getElementById("timetable-data").textContent);
-      const select = document.getElementById("semester-select");
-
-      const dayMap = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5 };
-
-      function renderTimetable(semesterId) {
-        // 一度全てのセルをクリア
-        console.log('呼び出し');
-        document.querySelectorAll("#timetable-body td").forEach((td) => {
-          td.innerHTML = '';
-        });
-
-        // 該当の学期だけ抽出
-        const filtered = data.filter((item) => item.semester_id == semesterId);
-
-        filtered.forEach((item) => {
-          item.schedules.forEach(([week, lesson]) => {
-            const dayNum = dayMap[week];
-            const cell = document.querySelector(
-              `#timetable-body td[data-day="${dayNum}"][data-lesson="${lesson}"]`
-            );
-            if (cell) {
-              const form = document.createElement("form");
-              form.method = "POST";
-              form.action = "/attendances/attendance/";
-
-              const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
-
-              if (csrfToken) {
-                const csrfInput = document.createElement("input");
-                csrfInput.type = "hidden";
-                csrfInput.name = "csrfmiddlewaretoken";
-                csrfInput.value = csrfToken;
-                form.appendChild(csrfInput);
-              }
-
-              // subjectclass_id
-              const subjectInput = document.createElement("input");
-              subjectInput.type = "hidden";
-              subjectInput.name = "subjectclass_id";
-              subjectInput.value = item.subjectclass_id;
-              form.appendChild(subjectInput);
-
-              // mytimetable_id
-              const timetableInput = document.createElement("input");
-              timetableInput.type = "hidden";
-              timetableInput.name = "mytimetable_id";
-              timetableInput.value = item.mytimetable_id;
-              form.appendChild(timetableInput);
-
-              // lesson（何限目）
-              const lessonInput = document.createElement("input");
-              lessonInput.type = "hidden";
-              lessonInput.name = "lesson";
-              lessonInput.value = lesson;
-              form.appendChild(lessonInput);
-
-              // subject_name（教科名）
-              const nameInput = document.createElement("input");
-              nameInput.type = "hidden";
-              nameInput.name = "subject_name";
-              nameInput.value = item.subject_name;
-              form.appendChild(nameInput);
-
-              // ボタン本体
-              const button = document.createElement("button");
-              button.className = "square-button";
-              button.innerText = item.subject_name;
-
-              form.appendChild(button);
-              cell.appendChild(form);
-            }
-          });
-        });
-      }
-
-      // 初期表示（最初のセレクト値）
-      // 初期表示（select に値がある場合のみ実行）
-      if (select.value) {
-        renderTimetable(select.value);
-      } else {
-        console.warn("初期のセレクト値が空です。データが描画されません。");
-      }
-
-
-      // セレクト変更時に再描画
-      select.addEventListener("change", (e) => {
-        renderTimetable(e.target.value);
-      });
-    });
+{% block content %}
+<main>
+  <script id="timetable-data" type="application/json">
+      {{ timetable_data_json|safe }}
   </script>
+  <div class="gnavi__wrap">
+    <form>
+      {% csrf_token %}
+      <label for="semester-select">学期選択:</label>
+      <select name="semester" id="semester-select">
+        {% for sem in semesters %}
+        <option value="{{ sem.id }}" {% if sem.id == selected_semester_id %}selected{% endif %}>{{ sem.name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
 
-</body>
+  <table class="timetable">
+    <thead>
+      <tr>
+        <th></th>
+        <th>月</th>
+        <th>火</th>
+        <th>水</th>
+        <th>木</th>
+        <th>金</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="timetable-body">
+      {% for lesson in periods %}
+      <tr class="timetable-row">
+        <th class="lesson-header">{{ lesson }}</th>
+        {% for day in weekdays %}
+        <td class="box flip timetable-cell" data-day="{{ day }}" data-lesson="{{ lesson }}">
+          <a href="#" class="square-button"></a>
+        </td>
+        {% endfor %}
+        <td class="empty-cell"></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-</html>
+  <div class="link_all">
+    {% comment %} <a href="{% url 'registration' %}" class="link_a">単位確認ページへ</a> {% endcomment %}
+    {% comment %} <a href="{% url 'registration' %}">
+      <img src="{% static 'img/Group 453.png' %}" class="img_a" alt="単位確認">
+    </a> {% endcomment %}
+  </div>
+  {% comment %}
+  <section class="notice">
+    <div class="text-with-lines">
+      <div class="text-contents">
+        <div class="text-english">notice</div>
+        <div class="text-japanese">お知らせ</div>
+      </div>
+    </div>
+    <div class="notice-stand">
+      <ul class="news-list">
+        {% for notice in notice %}
+        <li class="item">
+          <a href="#">
+            <div class="tabulabel {% if notice.is_urgent %}first{% else %}second{% endif %}">
+              {% if notice.is_urgent %}緊急{% else %}通常{% endif %}
+            </div>
+            <p class="title">{{ notice.title }}</p>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="notice-footer">
+      <a href="{% url 'all_notices' %}" class="view-all">VIEW ALL</a>
+      <a href="{% url 'registration' %}">
+        <img src="{% static 'img/Arrow 2.png' %}" class="arrows" alt="矢印">
+      </a>
+    </div>
+  </section> {% endcomment %}
+</main>
+<script>
+  
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const data = JSON.parse(document.getElementById("timetable-data").textContent);
+    const select = document.getElementById("semester-select");
+
+    const dayMap = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5 };
+
+    function renderTimetable(semesterId) {
+      // 一度全てのセルをクリア
+      console.log('呼び出し');
+      document.querySelectorAll("#timetable-body td").forEach((td) => {
+        td.innerHTML = '';
+      });
+
+      // 該当の学期だけ抽出
+      const filtered = data.filter((item) => item.semester_id == semesterId);
+
+      filtered.forEach((item) => {
+        item.schedules.forEach(([week, lesson]) => {
+          const dayNum = dayMap[week];
+          const cell = document.querySelector(
+            `#timetable-body td[data-day="${dayNum}"][data-lesson="${lesson}"]`
+          );
+          if (cell) {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/attendances/attendance/";
+
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+
+            if (csrfToken) {
+              const csrfInput = document.createElement("input");
+              csrfInput.type = "hidden";
+              csrfInput.name = "csrfmiddlewaretoken";
+              csrfInput.value = csrfToken;
+              form.appendChild(csrfInput);
+            }
+
+            // subjectclass_id
+            const subjectInput = document.createElement("input");
+            subjectInput.type = "hidden";
+            subjectInput.name = "subjectclass_id";
+            subjectInput.value = item.subjectclass_id;
+            form.appendChild(subjectInput);
+
+            // mytimetable_id
+            const timetableInput = document.createElement("input");
+            timetableInput.type = "hidden";
+            timetableInput.name = "mytimetable_id";
+            timetableInput.value = item.mytimetable_id;
+            form.appendChild(timetableInput);
+
+            // lesson（何限目）
+            const lessonInput = document.createElement("input");
+            lessonInput.type = "hidden";
+            lessonInput.name = "lesson";
+            lessonInput.value = lesson;
+            form.appendChild(lessonInput);
+
+            // subject_name（教科名）
+            const nameInput = document.createElement("input");
+            nameInput.type = "hidden";
+            nameInput.name = "subject_name";
+            nameInput.value = item.subject_name;
+            form.appendChild(nameInput);
+
+            // ボタン本体
+            const button = document.createElement("button");
+            button.className = "square-button";
+            button.innerText = item.subject_name;
+
+            form.appendChild(button);
+            cell.appendChild(form);
+          }
+        });
+      });
+    }
+
+    // 初期表示（最初のセレクト値）
+    // 初期表示（select に値がある場合のみ実行）
+    if (select.value) {
+      renderTimetable(select.value);
+    } else {
+      console.warn("初期のセレクト値が空です。データが描画されません。");
+    }
+
+
+    // セレクト変更時に再描画
+    select.addEventListener("change", (e) => {
+      renderTimetable(e.target.value);
+    });
+  });
+</script>
+
+{% endblock  %}
