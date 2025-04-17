@@ -2,164 +2,164 @@
 
 /* とりあえずスマホ画面だけ */
 
-html,body{
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+html,
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .flex {
-    display: flex;
+  display: flex;
 }
 
 .font-22 {
-    font-size: 22px;
+  font-size: 22px;
 }
 
 .align-center {
-    align-items: center;
+  align-items: center;
 }
 
 .ml-auto {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .mr-20 {
-    margin-right: 20px;
+  margin-right: 20px;
 }
 
 .ml-20 {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
-.b-bottom{
-    border-bottom: 1px solid black;
+.b-bottom {
+  border-bottom: 1px solid black;
 }
 
 footer {
-    margin-top: auto;
-    height: 40px;
-    background-color: #f2f2f2;
-    border-top: 1px solid #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  margin-top: auto;
+  height: 40px;
+  background-color: #f2f2f2;
+  border-top: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-footer p{
-    text-align: center;
-    color: #434343;
-    font-size: 12px;
+footer p {
+  text-align: center;
+  color: #434343;
+  font-size: 12px;
 }
-
 
 /************* humberger **************/
 
 .menu-container {
-    position: relative;
+  position: relative;
 }
 
 /* ハンバーガーアイコン */
 .hamburger {
-    width: 30px;
-    height: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer;
+  width: 30px;
+  height: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
 }
 
 .hamburger span {
-    height: 4px;
-    width: 100%;
-    background: #333;
-    border-radius: 2px;
-    transition: all 0.3s ease;
+  height: 4px;
+  width: 100%;
+  background: #333;
+  border-radius: 2px;
+  transition: all 0.3s ease;
 }
 
 /* メニュー（初期状態は非表示） */
 .menu {
-    display: none;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 60vw;
-    height: 100vh;
-    /* ← 高さも画面全体に広げる */
-    background: #ffffff;
-    padding: 10px;
-    border: 1px solid #ccc;
-    animation: slideIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 60vw;
+  height: 100vh;
+  /* ← 高さも画面全体に広げる */
+  background: #ffffff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  animation: slideIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 @keyframes slideIn {
-    0% {
-      transform: translateX(180px);
-      opacity: 0;
-    }
-    100% {
-      transform: translateX(0);
-    }
-    40%,100% {
-      opacity: 1;
-    }
+  0% {
+    transform: translateX(180px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+  }
+  40%,
+  100% {
+    opacity: 1;
+  }
 }
 
 .menu ul {
-    display: flex;
-    flex-direction: column;
-    height: 90vh;
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
 }
 
 .menu.active {
-    display: block;
+  display: block;
 }
 
 .text-center li {
-    text-align: center;
+  text-align: center;
 }
 
 .text-center li a {
-    text-decoration: none;
-    color: #23A852;
+  text-decoration: none;
+  color: #23a852;
 }
 
-.text-center li:nth-child(-n+6) {
-    margin-top: 30px;
+.text-center li:nth-child(-n + 6) {
+  margin-top: 30px;
 }
 
 .text-center li:first-child {
-    margin-top: 60px;
+  margin-top: 60px;
 }
 
 /* ✖に変形するアニメーション（オプション） */
 .hamburger.open span:nth-child(1) {
-    transform: translateY(10px) rotate(45deg);
-    z-index: 100;
+  transform: translateY(10px) rotate(45deg);
+  z-index: 100;
 }
 
 .text-center li:last-child {
-    margin-top: auto; /* ← これで一番下に寄せる！ */
+  margin-top: auto; /* ← これで一番下に寄せる！ */
 }
 
 .hamburger.open span:nth-child(2) {
-    opacity: 0;
+  opacity: 0;
 }
 
 .hamburger.open span:nth-child(3) {
-    transform: translateY(-10px) rotate(-45deg);
-    z-index: 100;
+  transform: translateY(-10px) rotate(-45deg);
+  z-index: 100;
 }
 
 /* スマホ画面 */
 
-@media screen and (max-width:440px) {
+@media screen and (max-width: 440px) {
+  header {
+    height: 60px;
+  }
 
-    header {
-        height: 60px;
-    }
-
-    .logo {
-        width: 40px;
-        height: auto;
-    }
+  .logo {
+    width: 40px;
+    height: auto;
+  }
 }
