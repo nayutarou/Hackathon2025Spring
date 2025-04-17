@@ -3,3 +3,44 @@
     color: white;
     font-weight: bold;
 }
+
+
+table {
+    width: 100%;
+    max-width: 428px;
+    margin: 0 auto;
+    /* 線を一つに重ねる */
+    border-collapse: collapse;
+    border: solid 1px #000;
+}
+
+th,
+td {
+    border: solid 1px #C8C8C8;
+    height: 67px;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    font-weight: 100;
+}
+
+.w-19{
+    width: 19vw;
+}
+
+.b-1{
+    border: 1px solid black;
+}
+
+.mt-5{
+    margin: 5px auto auto auto;
+}
+
+.mt-40{
+    margin-top: 40px;
+}
+
+.w-80{
+    width: 80vw;
+}
+

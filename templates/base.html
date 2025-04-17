@@ -31,10 +31,10 @@
 
 <body>
   <header class="flex align-center b-bottom">
-    <div class="flex align-center ml-20">
-      <img class="logo" src="{% static 'image/image.png' %}" alt="Logo" />
-      <h1 class="font-22">Unitrex</h1>
-    </div>
+    <a class="flex align-center ml-20" href="{% url 'attendances:index' %}">
+      <img class="logo" src="{% static 'image/logo.png' %}" alt="Logo" />
+      <a class="font-22 text-none" href="{% url 'attendances:index' %}" >Unitrex</a>
+    </a>
     <div class="flex_footer">
     <!-- ハンバーガーボタン -->
      <p class="color_menu">menu</p>
