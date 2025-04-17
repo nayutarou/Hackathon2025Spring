@@ -102,3 +102,4 @@ def show_subject_form(request):
         return render(request, 'subjects/subject_form.html', context)
     
     return HttpResponse(status=405)  # POST以外は許可しない
+

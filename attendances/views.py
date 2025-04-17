@@ -19,30 +19,27 @@ from django.views.decorators.http import require_POST
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from django.db.models import *
-
-
-
-
+from django.core.serializers.json import DjangoJSONEncoder
 
 # 登録画面の遷移
 @login_required
 def attendance_page(request):
     if request.method == 'POST':
-        subject_id = request.POST.get('subject_id')
-        lesson = request.POST.get('lesson')
-        week = request.POST.get('week')
+        subjectclass_id = request.POST.get('subjectclass_id')
         mytimetable_id = request.POST.get('mytimetable_id')
-
-        print(f"subjectid={subject_id},lesson={lesson},week={week},mytable_id={mytimetable_id}")
+        lesson = request.POST.get('lesson')
+        subject_name = request.POST.get('subject_name')
+   
+        # 処理を書く
+        print(subjectclass_id, mytimetable_id)
         
         context = {
-            'subject_id': subject_id,
-            'lesson': lesson,
-            'week': week,
+            'subject_id': subjectclass_id,
             'mytimetable_id': mytimetable_id,
+            'lesson': lesson,
+            'subject_name': subject_name,
         }
         return render(request, 'attendances/attendance.html', context)
-
 
 # 登録ボタンでDB登録
 @login_required
@@ -156,35 +153,36 @@ def mytimetable_regist(request):
 # 自分の時間割表示
 @login_required
 def topframe(request):
-    # ログインしているユーザー
     user = request.user
+    mytimetable_list = MYTimetable.objects.filter(user=user).select_related('subjectclass', 'semester')
+    semester_ids = mytimetable_list.values_list('semester_id', flat=True).distinct()
+    my_semesters = Semester.objects.filter(id__in=semester_ids).values('id', 'name')
 
-    # 学期名に対応する Semester オブジェクトを取得
-    semester_name = request.GET.get('semester', '一学年前期')
-    semester = get_object_or_404(Semester, name=semester_name)
+    week_map = {'1': 'Mon', '2': 'Tue', '3': 'Wed', '4': 'Thu', '5': 'Fri'}
 
-    # 自分の時間割を取得
-    mytimetable_list = MYTimetable.objects.filter(user=user, semester=semester).select_related('subjectclass')
+    timetable_data = []
+    for timetable in mytimetable_list:
+        subjectclass = timetable.subjectclass
+        weeks = subjectclass.week if isinstance(subjectclass.week, list) else [subjectclass.week]
+        lessons = subjectclass.lesson if isinstance(subjectclass.lesson, list) else [subjectclass.lesson]
+        weeks = [week_map.get(str(w), str(w)) for w in weeks]
+        schedule_list = list(zip(weeks, lessons))
 
-    # 通知を表示
-    notice_list = Notice.objects.filter(user=user).order_by('-created_at')
+        timetable_data.append({
+            'semester_id': timetable.semester.id,
+            'subjectclass_id': subjectclass.id,
+            'subject_name': subjectclass.subject.subject_name,
+            'schedules': schedule_list,
+            'mytimetable_id': timetable.id,
+        })
 
-    # 曜日とコマ数（テンプレートでループさせるため）
-    weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
-    periods = range(1, 5)  # 1限〜4限
-    
-    # Semesterのリストをテンプレートに渡す
-    semesters = Semester.objects.all()
-
-
-    return render(request, 'attendances/index.html', {
-        'mytimetable_list': mytimetable_list,
-        'semester': semester,
-        'notice': notice_list,
-        'weekdays': weekdays,
-        'periods': periods,
-        'semesters': semesters,  # ここで学期の一覧を渡す
-    })
+    context = {
+    'timetable_data_json': json.dumps(timetable_data, cls=DjangoJSONEncoder),
+    'semesters': list(my_semesters),
+    'weekdays': [1, 2, 3, 4, 5],  # 月〜金
+    'periods': range(1, 5),       # 1限〜4限（必要なら調整）
+}
+    return render(request, 'attendances/index.html', context)
     
 """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
